@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Undangan Pernikahan - Romeo & Juliet</title>
 
-    <meta property="og:title" content="The Wedding of Romeo & Juliet">
-    <meta property="og:description" content="25 Desember 2025. Tanpa mengurangi rasa hormat, kami mengharapkan kehadiran Anda.">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500">
-    
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
@@ -124,7 +120,7 @@
             <h2>Romeo & Juliet</h2>
             <div style="margin: 25px 0;">
                 <p style="font-size: 0.85rem; opacity: 0.9;">Kepada Yth:</p>
-                <h3 id="guest-display" style="color: var(--secondary); font-size: 1.6rem; margin-top: 5px;">Tamu Undangan</h3>
+                <h3 id="guest-display" style="color: var(--secondary); font-size: 1.6rem; margin-top: 5px;">Memuat Nama...</h3>
             </div>
             <button class="btn-open" onclick="bukaUndangan()">Buka Undangan</button>
         </div>
@@ -137,7 +133,7 @@
         </div>
 
         <section id="rsvp-section">
-            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary); margin-bottom: 30px;" data-aos="fade-up">Doa Restu</h2>
+            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary); margin-bottom: 30px;">Doa Restu</h2>
             
             <div class="rsvp-grid">
                 <div class="card" data-aos="fade-up">
@@ -177,11 +173,14 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // GANTI INI DENGAN URL DEPLOY GOOGLE APPS SCRIPT KAMU
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwgYcxOMLnSSJU0Feg5uyoaQtZxLDXUevAwySwdc9PiQaKbuhjC6nZt_CySFkCtyMuc/exec';
+        // MASUKKAN URL GOOGLE APPS SCRIPT KAMU DI SINI
+        const scriptURL = 'MASUKKAN_URL_SCRIPT_KAMU_DISINI';
 
+        // PENGAMBILAN NAMA FULL (FIXED)
         const urlParams = new URLSearchParams(window.location.search);
-        const tamu = urlParams.get('to') || "Tamu Undangan";
+        const rawTamu = urlParams.get('to');
+        const tamu = rawTamu ? decodeURIComponent(rawTamu.replace(/\+/g, ' ')) : "Tamu Undangan";
+        
         document.getElementById("guest-display").innerText = tamu;
         document.getElementById("form-nama").value = tamu;
 
@@ -217,15 +216,14 @@
                     return;
                 }
 
-                // Pisahkan utama dan balasan
                 const mains = data.filter(i => !i.replyID || i.replyID === "");
                 const replies = data.filter(i => i.replyID && i.replyID !== "");
 
                 mains.reverse().forEach(m => {
-                    const user = m.nama.replace(/\s+/g, '_').toLowerCase();
+                    const user = (m.nama || "Tamu").replace(/\s+/g, '_').toLowerCase();
                     let html = `
-                        <div class="ig-comment">
-                            <div class="ig-avatar">${m.nama.charAt(0).toUpperCase()}</div>
+                        <div class="ig-comment" id="msg-${m.id}">
+                            <div class="ig-avatar">${(m.nama || "T").charAt(0).toUpperCase()}</div>
                             <div class="ig-bubble">
                                 <span class="ig-username">${user}</span>
                                 <span class="ig-text">${m.pesan}</span>
@@ -239,9 +237,9 @@
                     if(sub.length > 0) {
                         html += '<div class="reply-container">';
                         sub.forEach(s => {
-                            const sUser = s.nama.replace(/\s+/g, '_').toLowerCase();
+                            const sUser = (s.nama || "Tamu").replace(/\s+/g, '_').toLowerCase();
                             html += `
-                                <div class="ig-comment" style="margin-bottom:10px;">
+                                <div class="ig-comment">
                                     <div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${sUser.charAt(0).toUpperCase()}</div>
                                     <div class="ig-bubble">
                                         <span class="ig-username">${sUser}</span>
@@ -253,9 +251,6 @@
                     }
                     container.innerHTML += html;
                 });
-            })
-            .catch(() => {
-                container.innerHTML = '<p style="text-align:center; color:red; font-size:0.8rem;">Gagal memuat pesan.</p>';
             });
         }
 
@@ -263,22 +258,26 @@
         form.addEventListener('submit', e => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            btn.disabled = true; 
-            btn.innerText = "Mengirim...";
+            const pesan = document.getElementById('form-pesan').value;
+
+            // OPTIMISTIC UI: Munculkan pesan secara instan
+            const container = document.getElementById('comment-container');
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = `<div class="ig-comment" style="opacity:0.5">
+                <div class="ig-avatar">${tamu.charAt(0)}</div>
+                <div class="ig-bubble"><span class="ig-username">${tamu.toLowerCase()}</span><span class="ig-text">${pesan}</span></div>
+            </div>`;
+            container.prepend(tempDiv);
+
+            btn.disabled = true; btn.innerText = "Mengirim...";
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(() => {
-                btn.disabled = false; 
-                btn.innerText = "Kirim Pesan Lagi";
+                btn.disabled = false; btn.innerText = "Kirim Pesan Lagi";
                 form.reset(); 
-                document.getElementById("form-nama").value = tamu; // Isi nama lagi otomatis
+                document.getElementById("form-nama").value = tamu;
                 cancelReply();
-                setTimeout(loadComments, 1500);
-            })
-            .catch(() => {
-                alert("Gagal mengirim, coba lagi.");
-                btn.disabled = false;
-                btn.innerText = "Kirim Pesan";
+                setTimeout(loadComments, 2000);
             });
         });
     </script>

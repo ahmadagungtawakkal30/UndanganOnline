@@ -57,6 +57,15 @@
             transition: 0.3s;
         }
 
+        /* --- MUSIC CONTROL --- */
+        #music-control {
+            position: fixed; bottom: 20px; right: 20px; z-index: 999;
+            background: white; width: 45px; height: 45px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid #ddd;
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
         /* --- CONTENT --- */
         #main-content { display: none; opacity: 0; transition: opacity 1.5s; }
         #main-content.show { display: block; opacity: 1; }
@@ -113,6 +122,14 @@
     </style>
 </head>
 <body>
+
+    <audio id="weddingMusic" loop>
+        <source src="music/OneinaMillion.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="music-control" onclick="toggleMusic()">
+        <span id="music-icon" style="font-size: 20px;">🎵</span>
+    </div>
 
     <div id="cover">
         <div class="cover-box">
@@ -173,10 +190,9 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // MASUKKAN URL GOOGLE APPS SCRIPT KAMU DI SINI
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwgYcxOMLnSSJU0Feg5uyoaQtZxLDXUevAwySwdc9PiQaKbuhjC6nZt_CySFkCtyMuc/exec';
 
-        // PENGAMBILAN NAMA FULL (FIXED)
+        // PENGAMBILAN NAMA FULL
         const urlParams = new URLSearchParams(window.location.search);
         const rawTamu = urlParams.get('to');
         const tamu = rawTamu ? decodeURIComponent(rawTamu.replace(/\+/g, ' ')) : "Tamu Undangan";
@@ -184,12 +200,38 @@
         document.getElementById("guest-display").innerText = tamu;
         document.getElementById("form-nama").value = tamu;
 
+        // VARIABEL MUSIK
+        const myAudio = document.getElementById("weddingMusic");
+        const musicBtn = document.getElementById("music-control");
+        const musicIcon = document.getElementById("music-icon");
+
         function bukaUndangan() {
+            // Sembunyikan cover
             document.getElementById('cover').classList.add('hide');
             document.getElementById('main-content').classList.add('show');
             document.body.style.overflow = 'auto';
+            
+            // Putar Musik
+            myAudio.play().catch(e => console.log("Autoplay dicegah"));
+            
+            // Tampilkan kontrol musik
+            musicBtn.style.display = 'flex';
+            musicBtn.style.animation = "spin 4s linear infinite";
+
             AOS.init({ duration: 1000, once: true });
             loadComments();
+        }
+
+        function toggleMusic() {
+            if (myAudio.paused) {
+                myAudio.play();
+                musicIcon.innerText = "🎵";
+                musicBtn.style.animation = "spin 4s linear infinite";
+            } else {
+                myAudio.pause();
+                musicIcon.innerText = "🔇";
+                musicBtn.style.animation = "none";
+            }
         }
 
         function setReply(id, name) {
@@ -260,7 +302,6 @@
             const btn = document.getElementById('submit-btn');
             const pesan = document.getElementById('form-pesan').value;
 
-            // OPTIMISTIC UI: Munculkan pesan secara instan
             const container = document.getElementById('comment-container');
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = `<div class="ig-comment" style="opacity:0.5">
@@ -283,4 +324,3 @@
     </script>
 </body>
 </html>
-

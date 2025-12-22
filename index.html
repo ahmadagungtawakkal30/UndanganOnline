@@ -39,16 +39,16 @@
                         url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000') no-repeat center center/cover;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             color: white; text-align: center; z-index: 9999;
-            transition: transform 1s ease-in-out;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
             padding: 15px;
         }
         #cover.hide { transform: translateY(-100%); pointer-events: none; }
         
         .cover-box {
             width: 100%; max-width: 350px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             padding: 30px 20px; border-radius: 20px; 
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
         }
         #cover h2 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; margin-bottom: 10px; }
@@ -62,7 +62,7 @@
         }
 
         /* --- CONTENT --- */
-        #main-content { display: none; opacity: 0; transition: opacity 1s; }
+        #main-content { display: none; opacity: 0; transition: opacity 1.5s; }
         #main-content.show { display: block; opacity: 1; }
 
         .hero { 
@@ -86,10 +86,10 @@
             background: #fafafa; font-size: 16px; font-family: inherit;
         }
         
-        input[readonly] { background: #f0f0f0; color: #777; }
+        input[readonly] { background: #f0f0f0; color: #777; cursor: not-allowed; }
 
         /* --- COMMENTS --- */
-        #comment-section { max-height: 500px; overflow-y: auto; }
+        #comment-section { max-height: 550px; overflow-y: auto; padding-right: 5px; }
         .ig-comment { display: flex; gap: 10px; margin-bottom: 15px; }
         .ig-avatar {
             width: 35px; height: 35px; font-size: 0.8rem;
@@ -98,10 +98,12 @@
             color: white; flex-shrink: 0; font-weight: bold;
         }
         .ig-bubble { background: var(--ig-gray); padding: 10px 14px; border-radius: 18px; flex: 1; }
-        .ig-username { font-weight: 600; font-size: 0.8rem; display: block; }
-        .ig-text { font-size: 0.85rem; }
+        .ig-username { font-weight: 600; font-size: 0.8rem; display: block; color: #262626; }
+        .ig-text { font-size: 0.85rem; color: #333; }
         .ig-meta { font-size: 0.7rem; color: #8e8e8e; margin-top: 4px; display: flex; gap: 12px; font-weight: 600; }
         
+        .reply-container { margin-left: 45px; border-left: 2px solid #efefef; padding-left: 10px; margin-top: -10px; margin-bottom: 15px; }
+
         #reply-indicator { 
             background: #eef7ff; padding: 10px; border-radius: 10px; 
             margin-bottom: 10px; font-size: 0.8rem; border-left: 4px solid #0095f6;
@@ -135,13 +137,13 @@
         </div>
 
         <section id="rsvp-section">
-            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary); margin-bottom: 30px;">Doa Restu</h2>
+            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary); margin-bottom: 30px;" data-aos="fade-up">Doa Restu</h2>
             
             <div class="rsvp-grid">
                 <div class="card" data-aos="fade-up">
                     <div id="reply-indicator">
                         <span>Membalas <b id="reply-to-name"></b></span>
-                        <span onclick="cancelReply()" style="float:right; color:red; cursor:pointer;">Batal</span>
+                        <span onclick="cancelReply()" style="float:right; color:red; cursor:pointer; font-weight:bold;">Batal</span>
                     </div>
                     <form id="rsvp-form">
                         <input type="hidden" name="replyID" id="form-replyID">
@@ -175,8 +177,8 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // GANTI DENGAN URL APPS SCRIPT ANDA
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfMAgtFZT0fsZVeI0wNKZ6kPnEnpuylq-bG_15sN2MxeKLmX5rC3rQaLfzxCZuwZR1/exec';
+        // GANTI INI DENGAN URL DEPLOY GOOGLE APPS SCRIPT KAMU
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyCq7YodsYz_jVpEFOzVW3j12jzDJ9hwKzMmIlJire4fS-GxH4j_ZGdf419FSYhP50H/exec';
 
         const urlParams = new URLSearchParams(window.location.search);
         const tamu = urlParams.get('to') || "Tamu Undangan";
@@ -210,25 +212,50 @@
             .then(res => res.json())
             .then(data => {
                 container.innerHTML = '';
-                if(data.length === 0) {
+                if(!data || data.length === 0) {
                     container.innerHTML = '<p style="text-align:center; color:#999; font-size:0.8rem;">Belum ada ucapan.</p>';
                     return;
                 }
-                const mains = data.filter(i => !i.replyID);
+
+                // Pisahkan utama dan balasan
+                const mains = data.filter(i => !i.replyID || i.replyID === "");
+                const replies = data.filter(i => i.replyID && i.replyID !== "");
+
                 mains.reverse().forEach(m => {
                     const user = m.nama.replace(/\s+/g, '_').toLowerCase();
-                    container.innerHTML += `
+                    let html = `
                         <div class="ig-comment">
-                            <div class="ig-avatar">${m.nama.charAt(0)}</div>
+                            <div class="ig-avatar">${m.nama.charAt(0).toUpperCase()}</div>
                             <div class="ig-bubble">
                                 <span class="ig-username">${user}</span>
                                 <span class="ig-text">${m.pesan}</span>
                                 <div class="ig-meta">
-                                    <span onclick="setReply('${m.id}', '${user}')" style="cursor:pointer;">Balas</span>
+                                    <span onclick="setReply('${m.id}', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span>
                                 </div>
                             </div>
                         </div>`;
+                    
+                    const sub = replies.filter(r => String(r.replyID) === String(m.id));
+                    if(sub.length > 0) {
+                        html += '<div class="reply-container">';
+                        sub.forEach(s => {
+                            const sUser = s.nama.replace(/\s+/g, '_').toLowerCase();
+                            html += `
+                                <div class="ig-comment" style="margin-bottom:10px;">
+                                    <div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${sUser.charAt(0).toUpperCase()}</div>
+                                    <div class="ig-bubble">
+                                        <span class="ig-username">${sUser}</span>
+                                        <span class="ig-text">${s.pesan}</span>
+                                    </div>
+                                </div>`;
+                        });
+                        html += '</div>';
+                    }
+                    container.innerHTML += html;
                 });
+            })
+            .catch(() => {
+                container.innerHTML = '<p style="text-align:center; color:red; font-size:0.8rem;">Gagal memuat pesan.</p>';
             });
         }
 
@@ -236,22 +263,17 @@
         form.addEventListener('submit', e => {
             e.preventDefault();
             const btn = document.getElementById('submit-btn');
-            
             btn.disabled = true; 
             btn.innerText = "Mengirim...";
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(() => {
-                // RESET FORM AGAR BISA KIRIM LAGI
                 btn.disabled = false; 
                 btn.innerText = "Kirim Pesan Lagi";
                 form.reset(); 
-                document.getElementById("form-nama").value = tamu; // Isi kembali nama otomatis
+                document.getElementById("form-nama").value = tamu; // Isi nama lagi otomatis
                 cancelReply();
-                
-                // Refresh komentar
                 setTimeout(loadComments, 1500);
-                alert("Terima kasih! Pesan Anda telah terkirim.");
             })
             .catch(() => {
                 alert("Gagal mengirim, coba lagi.");

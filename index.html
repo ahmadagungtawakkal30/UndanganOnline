@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Pernikahan - Romeo & Juliet</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #8a7051;
+            --secondary: #d4bc96;
+            --bg: #fdfaf5;
+            --text: #262626;
+            --ig-gray: #efefef;
+            --ig-link: #0095f6;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); overflow: hidden; }
+        
+        /* --- COVER SECTION --- */
+        #cover {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1920') no-repeat center center/cover;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; text-align: center; z-index: 9999;
+            transition: transform 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+            padding: 20px;
+        }
+        #cover.hide { transform: translateY(-100%); }
+        .cover-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 40px; border-radius: 20px; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        #cover h2 { font-family: 'Great Vibes', cursive; font-size: clamp(3rem, 10vw, 5rem); margin-bottom: 15px; }
+
+        .btn-open {
+            display: inline-block; padding: 15px 40px; background: var(--primary);
+            color: white; text-decoration: none; border-radius: 50px;
+            border: none; cursor: pointer; font-weight: 600; font-size: 1rem;
+            transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .btn-open:hover { background: var(--secondary); transform: scale(1.05); }
+
+        /* --- MAIN CONTENT --- */
+        #main-content { display: none; opacity: 0; transition: opacity 1.5s; }
+        #main-content.show { display: block; opacity: 1; }
+
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: white; }
+        .hero h1 { font-family: 'Great Vibes', cursive; font-size: clamp(4rem, 12vw, 6rem); color: var(--primary); }
+
+        section { padding: 80px 20px; max-width: 1100px; margin: auto; }
+
+        /* --- RSVP & COMMENTS --- */
+        .rsvp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-top: 40px; }
+        .card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: left; border: 1px solid #eee; }
+        label { font-size: 0.75rem; font-weight: 600; color: #8e8e8e; margin-left: 5px; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 12px; border: 1px solid #dbdbdb; background: #fafafa; font-family: inherit; }
+
+        /* --- INSTAGRAM COMMENTS STYLE --- */
+        #comment-section { height: 500px; overflow-y: auto; padding-right: 10px; }
+        .ig-comment { display: flex; align-items: flex-start; margin-bottom: 20px; gap: 12px; }
+        .ig-avatar {
+            width: 35px; height: 35px; 
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold; flex-shrink: 0; text-transform: uppercase; font-size: 0.8rem;
+        }
+        .ig-bubble { background: var(--ig-gray); padding: 10px 15px; border-radius: 18px; line-height: 1.4; }
+        .ig-username { font-weight: 600; font-size: 0.85rem; margin-right: 5px; }
+        .ig-text { font-size: 0.85rem; }
+        .ig-meta { font-size: 0.7rem; color: #8e8e8e; margin-top: 5px; margin-left: 8px; display: flex; gap: 12px; font-weight: 600; }
+        
+        .reply-container { margin-left: 45px; border-left: 2px solid #efefef; padding-left: 15px; margin-top: -10px; margin-bottom: 15px; }
+        .mention { color: #00376b; font-weight: 600; }
+
+        #reply-indicator { background: #f0f9ff; padding: 8px 15px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--ig-link); display: none; }
+
+        @media (max-width: 768px) { .hero h1 { font-size: 4rem; } }
+    </style>
+</head>
+<body>
+
+    <div id="cover">
+        <div class="cover-box">
+            <p style="letter-spacing: 4px; font-size: 0.8rem; margin-bottom: 10px;">THE WEDDING OF</p>
+            <h2>Romeo & Juliet</h2>
+            <div style="margin: 25px 0;">
+                <p style="font-size: 0.9rem; color: #ddd;">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
+                <h3 id="guest-display" style="color: var(--secondary); font-size: 1.8rem; margin-top: 5px;">Tamu Undangan</h3>
+            </div>
+            <button class="btn-open" onclick="bukaUndangan()">Buka Undangan</button>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="hero">
+            <h1 data-aos="zoom-in">Romeo & Juliet</h1>
+            <p data-aos="fade-up">25 . 12 . 2025</p>
+        </div>
+
+        <section id="rsvp">
+            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary);" data-aos="fade-up">Doa Restu & Konfirmasi Kehadiran</h2>
+            
+            <div class="rsvp-grid">
+                <div class="card" data-aos="fade-right">
+                    <div id="reply-indicator">
+                        <span style="font-size: 0.7rem;">Membalas <b id="reply-to-name"></b></span>
+                        <span onclick="cancelReply()" style="float:right; color:red; cursor:pointer; font-size:0.7rem;">Batal</span>
+                    </div>
+                    <form id="rsvp-form">
+                        <input type="hidden" name="replyID" id="form-replyID">
+                        <label>NAMA</label>
+                        <input type="text" name="nama" id="form-nama" required>
+                        
+                        <label>STATUS KEHADIRAN</label>
+                        <select name="kehadiran">
+                            <option value="Hadir">Akan Hadir</option>
+                            <option value="Tidak Hadir">Berhalangan</option>
+                        </select>
+                        
+                        <label>PESAN DOA</label>
+                        <textarea name="pesan" id="form-pesan" rows="4" placeholder="Tulis ucapan doa..." required></textarea>
+                        
+                        <button type="submit" id="submit-btn" class="btn-open" style="width: 100%;">Kirim Pesan</button>
+                    </form>
+                </div>
+
+                <div class="card" data-aos="fade-left">
+                    <div style="border-bottom: 1px solid #eee; margin-bottom: 20px; padding-bottom: 10px; font-weight: 600;">Komentar</div>
+                    <div id="comment-section">
+                        <div id="comment-container">
+                            <p style="text-align: center; color: #888; font-size: 0.8rem;">Memuat komentar...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfMAgtFZT0fsZVeI0wNKZ6kPnEnpuylq-bG_15sN2MxeKLmX5rC3rQaLfzxCZuwZR1/exec';
+
+        function bukaUndangan() {
+            document.getElementById('cover').classList.add('hide');
+            document.getElementById('main-content').classList.add('show');
+            document.body.style.overflow = 'auto';
+            AOS.init({ duration: 1000, once: true });
+            loadComments();
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let tamu = urlParams.get('to') || "Tamu Undangan";
+        document.getElementById("guest-display").innerText = tamu;
+        document.getElementById("form-nama").value = tamu.toLowerCase().replace(/\s+/g, '_');
+
+        function setReply(id, name) {
+            document.getElementById('form-replyID').value = id;
+            document.getElementById('reply-indicator').style.display = 'block';
+            document.getElementById('reply-to-name').innerText = '@' + name;
+            const msg = document.getElementById('form-pesan');
+            msg.value = '@' + name + ' ';
+            msg.focus();
+        }
+
+        function cancelReply() {
+            document.getElementById('form-replyID').value = '';
+            document.getElementById('reply-indicator').style.display = 'none';
+            document.getElementById('form-pesan').value = '';
+        }
+
+        function loadComments() {
+            const container = document.getElementById('comment-container');
+            fetch(scriptURL).then(res => res.json()).then(data => {
+                container.innerHTML = '';
+                const mainComments = data.filter(item => !item.replyID);
+                const replies = data.filter(item => item.replyID);
+
+                mainComments.reverse().forEach(main => {
+                    const username = main.nama.toLowerCase().replace(/\s+/g, '_');
+                    let commentHTML = `
+                        <div class="ig-comment">
+                            <div class="ig-avatar">${main.nama.charAt(0)}</div>
+                            <div class="ig-content">
+                                <div class="ig-bubble">
+                                    <span class="ig-username">${username}</span>
+                                    <span class="ig-text">${main.pesan.replace(/(@\w+)/g, '<span class="mention">$1</span>')}</span>
+                                </div>
+                                <div class="ig-meta">
+                                    <span>${new Date(main.waktu).toLocaleDateString('id-ID', {day:'numeric', month:'short'})}</span>
+                                    <span onclick="setReply('${main.id}', '${username}')" style="cursor:pointer">Balas</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    const subReplies = replies.filter(r => r.replyID == main.id);
+                    if(subReplies.length > 0) {
+                        commentHTML += '<div class="reply-container">';
+                        subReplies.forEach(sub => {
+                            commentHTML += `
+                                <div class="ig-comment" style="margin-bottom:10px">
+                                    <div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${sub.nama.charAt(0)}</div>
+                                    <div class="ig-content">
+                                        <div class="ig-bubble">
+                                            <span class="ig-username">${sub.nama.toLowerCase().replace(/\s+/g, '_')}</span>
+                                            <span class="ig-text">${sub.pesan.replace(/(@\w+)/g, '<span class="mention">$1</span>')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        commentHTML += '</div>';
+                    }
+                    container.innerHTML += commentHTML;
+                });
+            });
+        }
+
+        const form = document.getElementById('rsvp-form');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.innerText = "Mengirim...";
+            fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
+            .then(() => {
+                alert("Pesan Terkirim!");
+                btn.disabled = false; btn.innerText = "Kirim Pesan";
+                form.reset(); cancelReply();
+                setTimeout(loadComments, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

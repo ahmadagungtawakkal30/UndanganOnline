@@ -6,7 +6,7 @@
     <title>Undangan Pernikahan - Romeo & Juliet</title>
 
     <meta property="og:title" content="The Wedding of Romeo & Juliet">
-    <meta property="og:description" content="25 Desember 2025. Kami mengharapkan kehadiran Anda.">
+    <meta property="og:description" content="25 Desember 2025. Tanpa mengurangi rasa hormat, kami mengharapkan kehadiran Anda.">
     <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=500">
     <meta property="og:url" content="https://undangan-kamu.netlify.app">
     
@@ -28,11 +28,11 @@
             font-family: 'Montserrat', sans-serif; 
             background-color: var(--bg); 
             color: var(--text); 
-            overflow-x: hidden; 
+            overflow: hidden; /* Dikunci sebelum buka undangan */
             line-height: 1.6;
         }
 
-        /* --- COVER (Sangat Penting untuk Mobile) --- */
+        /* --- COVER --- */
         #cover {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -43,122 +43,126 @@
             transition: transform 1s ease-in-out;
             padding: 15px;
         }
-        #cover.hide { transform: translateY(-100%); }
+        #cover.hide { transform: translateY(-100%); pointer-events: none; }
+        
         .cover-box {
             width: 100%; max-width: 350px;
             background: rgba(255, 255, 255, 0.1);
             padding: 30px 20px; border-radius: 20px; 
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         #cover h2 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; margin-bottom: 10px; }
 
         .btn-open {
             display: inline-block; padding: 14px 35px; background: var(--primary);
             color: white; text-decoration: none; border-radius: 50px;
-            border: none; cursor: pointer; font-weight: 600; font-size: 0.9rem;
+            border: none; cursor: pointer; font-weight: 600; font-size: 1rem;
             box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            transition: 0.3s;
         }
+        .btn-open:active { transform: scale(0.95); }
 
         /* --- CONTENT --- */
-        #main-content { display: none; opacity: 0; }
+        #main-content { display: none; opacity: 0; transition: opacity 1s; }
         #main-content.show { display: block; opacity: 1; }
 
         .hero { 
             height: 100vh; display: flex; flex-direction: column; 
             justify-content: center; align-items: center; background: #fff;
-            padding: 20px;
+            padding: 20px; text-align: center;
         }
         .hero h1 { font-family: 'Great Vibes', cursive; font-size: clamp(3.5rem, 15vw, 5.5rem); color: var(--primary); }
 
-        section { padding: 60px 15px; width: 100%; max-width: 600px; margin: auto; }
+        section { padding: 40px 15px; width: 100%; max-width: 600px; margin: auto; }
 
-        /* --- RSVP & COMMENTS (Mobile Friendly) --- */
         .card { 
             background: white; padding: 25px 20px; border-radius: 20px; 
-            box-shadow: 0 5px 25px rgba(0,0,0,0.05); margin-bottom: 30px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05); margin-bottom: 25px;
+            border: 1px solid #eee;
         }
         
         input, select, textarea { 
-            width: 100%; padding: 14px; margin: 8px 0 15px 0; 
+            width: 100%; padding: 12px; margin: 8px 0 15px 0; 
             border-radius: 12px; border: 1px solid #ddd; 
-            background: #fafafa; font-size: 16px; /* Font 16px mencegah auto-zoom di iPhone */
+            background: #fafafa; font-size: 16px; font-family: inherit;
         }
         
-        input[readonly] { background: #eee; }
+        input[readonly] { background: #f0f0f0; color: #777; }
 
-        /* --- INSTAGRAM COMMENTS MOBILE --- */
-        #comment-section { max-height: 450px; overflow-y: auto; overflow-x: hidden; }
-        .ig-comment { display: flex; gap: 10px; margin-bottom: 18px; }
+        /* --- COMMENTS --- */
+        #comment-section { max-height: 500px; overflow-y: auto; }
+        .ig-comment { display: flex; gap: 10px; margin-bottom: 15px; }
         .ig-avatar {
-            width: 32px; height: 32px; font-size: 0.7rem;
+            width: 35px; height: 35px; font-size: 0.8rem;
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; flex-shrink: 0;
+            color: white; flex-shrink: 0; font-weight: bold;
         }
-        .ig-bubble { background: var(--ig-gray); padding: 10px 14px; border-radius: 18px; max-width: 85%; }
+        .ig-bubble { background: var(--ig-gray); padding: 10px 14px; border-radius: 18px; flex: 1; }
         .ig-username { font-weight: 600; font-size: 0.8rem; display: block; }
-        .ig-text { font-size: 0.85rem; word-wrap: break-word; }
-        .ig-meta { font-size: 0.7rem; color: #8e8e8e; margin-top: 4px; display: flex; gap: 10px; }
+        .ig-text { font-size: 0.85rem; }
+        .ig-meta { font-size: 0.7rem; color: #8e8e8e; margin-top: 4px; display: flex; gap: 12px; font-weight: 600; }
         
-        .reply-container { margin-left: 35px; border-left: 1.5px solid #eee; padding-left: 10px; }
+        .reply-container { margin-left: 45px; border-left: 2px solid #efefef; padding-left: 10px; margin-top: -5px; margin-bottom: 10px; }
 
         #reply-indicator { 
             background: #eef7ff; padding: 10px; border-radius: 10px; 
             margin-bottom: 10px; font-size: 0.8rem; border-left: 4px solid #0095f6;
+            display: none;
         }
 
-        /* Responsif Tablet/PC */
         @media (min-width: 768px) {
             section { max-width: 900px; }
             .rsvp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         }
     </style>
 </head>
-<body id="body">
+<body>
 
     <div id="cover">
-        <div class="cover-box" data-aos="fade-up">
-            <p style="letter-spacing: 3px; font-size: 0.7rem;">THE WEDDING OF</p>
+        <div class="cover-box">
+            <p style="letter-spacing: 3px; font-size: 0.7rem; margin-bottom: 5px;">THE WEDDING OF</p>
             <h2>Romeo & Juliet</h2>
-            <div style="margin: 20px 0;">
-                <p style="font-size: 0.8rem; opacity: 0.9;">Kepada Yth:</p>
-                <h3 id="guest-display" style="color: var(--secondary); font-size: 1.5rem; margin-top: 5px;">Tamu Undangan</h3>
+            <div style="margin: 25px 0;">
+                <p style="font-size: 0.85rem; opacity: 0.9;">Kepada Yth:</p>
+                <h3 id="guest-display" style="color: var(--secondary); font-size: 1.6rem; margin-top: 5px;">Tamu Undangan</h3>
             </div>
-            <button class="btn-open" onclick="bukaUndangan()">Buka Undangan</button>
+            <button class="btn-open" id="btn-buka-utama" onclick="bukaUndangan()">Buka Undangan</button>
         </div>
     </div>
 
     <div id="main-content">
         <div class="hero">
             <h1 data-aos="zoom-in">Romeo & Juliet</h1>
-            <p data-aos="fade-up" style="letter-spacing: 3px;">25 . 12 . 2025</p>
+            <p data-aos="fade-up" style="letter-spacing: 3px; font-weight: 600;">25 . 12 . 2025</p>
         </div>
 
         <section id="rsvp-section">
-            <h2 style="font-family: 'Great Vibes'; font-size: 2.8rem; text-align: center; color: var(--primary); margin-bottom: 30px;">Doa Restu</h2>
+            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary); margin-bottom: 30px;">Doa Restu</h2>
             
             <div class="rsvp-grid">
                 <div class="card" data-aos="fade-up">
                     <div id="reply-indicator">
                         <span>Membalas <b id="reply-to-name"></b></span>
-                        <span onclick="cancelReply()" style="float:right; color:red; font-weight:bold;">X</span>
+                        <span onclick="cancelReply()" style="float:right; color:red; cursor:pointer;">Batal</span>
                     </div>
                     <form id="rsvp-form">
                         <input type="hidden" name="replyID" id="form-replyID">
                         <label>NAMA</label>
-                        <input type="text" name="nama" id="form-nama" readonly>
+                        <input type="text" name="nama" id="form-nama" readonly required>
                         
                         <label>KEHADIRAN</label>
                         <select name="kehadiran">
-                            <option value="Hadir">Hadir</option>
+                            <option value="Hadir">Akan Hadir</option>
                             <option value="Tidak Hadir">Berhalangan</option>
                         </select>
                         
-                        <label>PESAN</label>
-                        <textarea name="pesan" id="form-pesan" rows="3" placeholder="Tulis ucapan..." required></textarea>
+                        <label>PESAN DOA</label>
+                        <textarea name="pesan" id="form-pesan" rows="4" placeholder="Tulis ucapan doa..." required></textarea>
                         
-                        <button type="submit" id="submit-btn" class="btn-open" style="width: 100%;">Kirim Ucapan</button>
+                        <button type="submit" id="submit-btn" class="btn-open" style="width: 100%;">Kirim Pesan</button>
                     </form>
                 </div>
 
@@ -176,26 +180,35 @@
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        // GANTI INI DENGAN URL APPS SCRIPT KAMU
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxfMAgtFZT0fsZVeI0wNKZ6kPnEnpuylq-bG_15sN2MxeKLmX5rC3rQaLfzxCZuwZR1/exec';
 
-        // Ambil nama dari URL
+        // Ambil nama tamu dari link (?to=Nama)
         const urlParams = new URLSearchParams(window.location.search);
         const tamu = urlParams.get('to') || "Tamu Undangan";
+        
+        // Isi nama otomatis saat halaman dimuat
         document.getElementById("guest-display").innerText = tamu;
         document.getElementById("form-nama").value = tamu;
 
         function bukaUndangan() {
+            // Animasi transisi
             document.getElementById('cover').classList.add('hide');
             document.getElementById('main-content').classList.add('show');
-            document.getElementById('body').style.overflow = 'auto';
-            AOS.init({ duration: 800, once: true });
+            document.body.style.overflow = 'auto';
+            
+            // Inisialisasi AOS & Komentar
+            AOS.init({ duration: 1000, once: true });
             loadComments();
 
-            if(localStorage.getItem('rsvp_done')) {
-                const btn = document.getElementById('submit-btn');
-                btn.disabled = true;
-                btn.innerText = "Ucapan sudah terkirim ✨";
-            }
+            // Cek jika sudah pernah kirim ucapan
+            try {
+                if(localStorage.getItem('rsvp_status')) {
+                    const btn = document.getElementById('submit-btn');
+                    btn.disabled = true;
+                    btn.innerText = "Ucapan sudah terkirim ✨";
+                }
+            } catch(e) {}
         }
 
         function setReply(id, name) {
@@ -213,12 +226,19 @@
 
         function loadComments() {
             const container = document.getElementById('comment-container');
-            fetch(scriptURL).then(res => res.json()).then(data => {
+            fetch(scriptURL)
+            .then(res => res.json())
+            .then(data => {
                 container.innerHTML = '';
-                const main = data.filter(i => !i.replyID);
+                if(data.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#999; font-size:0.8rem;">Belum ada ucapan.</p>';
+                    return;
+                }
+                
+                const mains = data.filter(i => !i.replyID);
                 const replies = data.filter(i => i.replyID);
 
-                main.reverse().forEach(m => {
+                mains.reverse().forEach(m => {
                     const user = m.nama.replace(/\s+/g, '_').toLowerCase();
                     let html = `
                         <div class="ig-comment">
@@ -227,8 +247,8 @@
                                 <span class="ig-username">${user}</span>
                                 <span class="ig-text">${m.pesan}</span>
                                 <div class="ig-meta">
-                                    <span>Baru saja</span>
-                                    <span onclick="setReply('${m.id}', '${user}')" style="font-weight:bold; cursor:pointer;">Balas</span>
+                                    <span>Pesan</span>
+                                    <span onclick="setReply('${m.id}', '${user}')" style="cursor:pointer; color:#262626;">Balas</span>
                                 </div>
                             </div>
                         </div>`;
@@ -239,7 +259,7 @@
                         sub.forEach(s => {
                             html += `
                                 <div class="ig-comment">
-                                    <div class="ig-avatar" style="width:24px; height:24px; font-size:0.6rem;">${s.nama.charAt(0)}</div>
+                                    <div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${s.nama.charAt(0)}</div>
                                     <div class="ig-bubble">
                                         <span class="ig-username">${s.nama.replace(/\s+/g, '_').toLowerCase()}</span>
                                         <span class="ig-text">${s.pesan}</span>
@@ -250,6 +270,9 @@
                     }
                     container.innerHTML += html;
                 });
+            })
+            .catch(() => {
+                container.innerHTML = '<p style="text-align:center; color:red; font-size:0.8rem;">Gagal memuat pesan.</p>';
             });
         }
 
@@ -261,10 +284,10 @@
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(() => {
-                localStorage.setItem('rsvp_done', 'true');
+                try { localStorage.setItem('rsvp_status', 'done'); } catch(e){}
                 btn.innerText = "Ucapan sudah terkirim ✨";
                 form.reset(); cancelReply();
-                setTimeout(loadComments, 1500);
+                setTimeout(loadComments, 2000);
             });
         });
     </script>

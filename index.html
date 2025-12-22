@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Undangan Pernikahan - Romeo & Juliet</title>
+
+    <meta property="og:title" content="The Wedding of Romeo & Juliet">
+    <meta property="og:description" content="Minggu, 25 Desember 2025. Tanpa mengurangi rasa hormat, kami mengundang Anda untuk hadir.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=60&w=800">
+    <meta property="og:url" content="https://undangan-kamu.netlify.app">
+    <meta property="og:type" content="website">
     
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -19,9 +25,9 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); overflow: hidden; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--bg); color: var(--text); overflow: hidden; scroll-behavior: smooth; }
         
-        /* --- COVER SECTION --- */
+        /* --- COVER --- */
         #cover {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100vh;
@@ -46,31 +52,30 @@
             border: none; cursor: pointer; font-weight: 600; font-size: 1rem;
             transition: 0.3s; margin-top: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-        .btn-open:hover { background: var(--secondary); transform: scale(1.05); }
+        .btn-open:hover:not(:disabled) { background: var(--secondary); transform: scale(1.05); }
+        .btn-open:disabled { background: #999; cursor: not-allowed; opacity: 0.7; }
 
-        /* --- MAIN CONTENT --- */
+        /* --- CONTENT --- */
         #main-content { display: none; opacity: 0; transition: opacity 1.5s; }
         #main-content.show { display: block; opacity: 1; }
-
         .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: white; }
         .hero h1 { font-family: 'Great Vibes', cursive; font-size: clamp(4rem, 12vw, 6rem); color: var(--primary); }
-
         section { padding: 80px 20px; max-width: 1100px; margin: auto; }
 
-        /* --- RSVP & COMMENTS --- */
+        /* --- FORM & COMMENTS --- */
         .rsvp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; margin-top: 40px; }
-        .card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: left; border: 1px solid #eee; }
+        .card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #eee; }
         label { font-size: 0.75rem; font-weight: 600; color: #8e8e8e; margin-left: 5px; }
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 12px; border: 1px solid #dbdbdb; background: #fafafa; font-family: inherit; }
+        input[readonly] { background-color: #f2f2f2; color: #777; cursor: not-allowed; }
 
-        /* --- INSTAGRAM COMMENTS STYLE --- */
         #comment-section { height: 500px; overflow-y: auto; padding-right: 10px; }
         .ig-comment { display: flex; align-items: flex-start; margin-bottom: 20px; gap: 12px; }
         .ig-avatar {
             width: 35px; height: 35px; 
             background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; font-weight: bold; flex-shrink: 0; text-transform: uppercase; font-size: 0.8rem;
+            color: white; font-weight: bold; flex-shrink: 0; font-size: 0.8rem;
         }
         .ig-bubble { background: var(--ig-gray); padding: 10px 15px; border-radius: 18px; line-height: 1.4; }
         .ig-username { font-weight: 600; font-size: 0.85rem; margin-right: 5px; }
@@ -79,10 +84,7 @@
         
         .reply-container { margin-left: 45px; border-left: 2px solid #efefef; padding-left: 15px; margin-top: -10px; margin-bottom: 15px; }
         .mention { color: #00376b; font-weight: 600; }
-
         #reply-indicator { background: #f0f9ff; padding: 8px 15px; border-radius: 10px; margin-bottom: 10px; border-left: 3px solid var(--ig-link); display: none; }
-
-        @media (max-width: 768px) { .hero h1 { font-size: 4rem; } }
     </style>
 </head>
 <body>
@@ -95,7 +97,7 @@
                 <p style="font-size: 0.9rem; color: #ddd;">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
                 <h3 id="guest-display" style="color: var(--secondary); font-size: 1.8rem; margin-top: 5px;">Tamu Undangan</h3>
             </div>
-            <button class="btn-open" onclick="bukaUndangan()">Buka Undangan</button>
+            <button class="btn-open" id="btn-buka" onclick="bukaUndangan()">Buka Undangan</button>
         </div>
     </div>
 
@@ -106,7 +108,7 @@
         </div>
 
         <section id="rsvp">
-            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary);" data-aos="fade-up">Doa Restu & Konfirmasi Kehadiran</h2>
+            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary);" data-aos="fade-up">Doa Restu & Konfirmasi</h2>
             
             <div class="rsvp-grid">
                 <div class="card" data-aos="fade-right">
@@ -116,8 +118,8 @@
                     </div>
                     <form id="rsvp-form">
                         <input type="hidden" name="replyID" id="form-replyID">
-                        <label>NAMA</label>
-                        <input type="text" name="nama" id="form-nama" required>
+                        <label>NAMA PENERIMA UNDANGAN</label>
+                        <input type="text" name="nama" id="form-nama" readonly required>
                         
                         <label>STATUS KEHADIRAN</label>
                         <select name="kehadiran">
@@ -148,18 +150,26 @@
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxfMAgtFZT0fsZVeI0wNKZ6kPnEnpuylq-bG_15sN2MxeKLmX5rC3rQaLfzxCZuwZR1/exec';
 
+        // Ambil nama dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let tamu = urlParams.get('to') || "Tamu Undangan";
+        document.getElementById("guest-display").innerText = tamu;
+        document.getElementById("form-nama").value = tamu;
+
         function bukaUndangan() {
             document.getElementById('cover').classList.add('hide');
             document.getElementById('main-content').classList.add('show');
             document.body.style.overflow = 'auto';
             AOS.init({ duration: 1000, once: true });
             loadComments();
-        }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        let tamu = urlParams.get('to') || "Tamu Undangan";
-        document.getElementById("guest-display").innerText = tamu;
-        document.getElementById("form-nama").value = tamu.toLowerCase().replace(/\s+/g, '_');
+            // Cek jika sudah pernah kirim pesan sebelumnya
+            if(localStorage.getItem('rsvp_status')) {
+                const btn = document.getElementById('submit-btn');
+                btn.disabled = true;
+                btn.innerText = "Terima kasih atas doanya!";
+            }
+        }
 
         function setReply(id, name) {
             document.getElementById('form-replyID').value = id;
@@ -198,8 +208,7 @@
                                     <span onclick="setReply('${main.id}', '${username}')" style="cursor:pointer">Balas</span>
                                 </div>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
 
                     const subReplies = replies.filter(r => r.replyID == main.id);
                     if(subReplies.length > 0) {
@@ -214,8 +223,7 @@
                                             <span class="ig-text">${sub.pesan.replace(/(@\w+)/g, '<span class="mention">$1</span>')}</span>
                                         </div>
                                     </div>
-                                </div>
-                            `;
+                                </div>`;
                         });
                         commentHTML += '</div>';
                     }
@@ -227,16 +235,24 @@
         const form = document.getElementById('rsvp-form');
         form.addEventListener('submit', e => {
             e.preventDefault();
+            
+            if (tamu === "Tamu Undangan") {
+                alert("Silakan masuk menggunakan link resmi.");
+                return;
+            }
+
             const btn = document.getElementById('submit-btn');
             btn.disabled = true; btn.innerText = "Mengirim...";
+
             fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
             .then(() => {
                 alert("Pesan Terkirim!");
-                btn.disabled = false; btn.innerText = "Kirim Pesan";
+                localStorage.setItem('rsvp_status', 'sent'); // Kunci spam
+                btn.innerText = "Terima kasih atas doanya!";
                 form.reset(); cancelReply();
                 setTimeout(loadComments, 2000);
             });
         });
     </script>
 </body>
-</html>
+</html>x

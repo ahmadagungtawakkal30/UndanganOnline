@@ -879,41 +879,51 @@ body:not(.dark-night) .ayat-arab {
   margin-top: 25px;
 }
 
-/* Ukuran time box */
+/* BOX */
 .time-box {
-  padding: 12px 0;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 215, 160, 0.35);
+  border-radius: 16px;
+  padding: 14px 0;
   text-align: center;
-  border-radius: 14px;
+  backdrop-filter: blur(6px);
 }
 
-/* Angka */
+/* ANGKA */
 .time-box span {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
+  color: var(--primary);
   display: block;
 }
 
-/* Label */
+/* LABEL */
 .time-box small {
   font-size: 0.65rem;
   letter-spacing: 1px;
-  opacity: 0.8;
+  color: var(--secondary);
 }
 
-/* ===== KHUSUS MOBILE ===== */
+/* ===== MOBILE TUNING ===== */
 @media (max-width: 480px) {
   .countdown-wrapper {
     gap: 6px;
   }
 
+  .time-box {
+    padding: 10px 0;
+    border-radius: 12px;
+  }
+
   .time-box span {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 
   .time-box small {
     font-size: 0.55rem;
   }
 }
+
 
 .event-date {
   text-align: center;
@@ -1093,4 +1103,5 @@ body.dark-night .ig-credit {
 .hidden {
   display: none;
 }
+
 

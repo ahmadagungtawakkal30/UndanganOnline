@@ -265,10 +265,13 @@ input[readonly] {
   overflow-y: auto;
   padding-right: 5px;
 }
+
+/* ===== KOMENTAR UTAMA ===== */
 .ig-comment {
   display: flex;
+  align-items: flex-start;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 .ig-avatar {
   width: 35px;
@@ -283,11 +286,16 @@ input[readonly] {
   flex-shrink: 0;
   font-weight: bold;
 }
+
+/* BUBBLE KOMENTAR */
 .ig-bubble {
-  background: var(--ig-gray);
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.15);
   padding: 10px 14px;
-  border-radius: 18px;
-  flex: 1;
+  border-radius: 14px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 .ig-username {
   font-weight: 600;
@@ -308,12 +316,42 @@ input[readonly] {
   font-weight: 600;
 }
 
+/* ===== REPLY ===== */
 .reply-container {
-  margin-left: 45px;
-  border-left: 2px solid #efefef;
-  padding-left: 10px;
-  margin-top: -10px;
-  margin-bottom: 15px;
+  margin-left: 35px;
+  margin-top: 6px;
+}
+reply-container .ig-comment {
+  margin-bottom: 8px;
+}
+
+* BUBBLE REPLY LEBIH KECIL */
+.reply-container .ig-bubble {
+  max-width: 85%;
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* USERNAME */
+.ig-username {
+  font-weight: 600;
+  font-size: 0.75rem;
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* TEXT */
+.ig-text {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* REPLY TEXT LEBIH KECIL */
+.reply-container .ig-text {
+  font-size: 0.72rem;
 }
 
 #reply-indicator {
@@ -1103,5 +1141,6 @@ body.dark-night .ig-credit {
 .hidden {
   display: none;
 }
+
 
 

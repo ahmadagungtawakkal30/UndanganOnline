@@ -873,47 +873,48 @@ body:not(.dark-night) .ayat-arab {
 
 /* Countdown */
 .countdown-wrapper {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   margin-top: 25px;
-  flex-wrap: wrap;
 }
 
+/* Ukuran time box */
 .time-box {
-  min-width: 70px;
-  padding: 12px 10px;
-  border-radius: 14px;
+  padding: 12px 0;
   text-align: center;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(212, 188, 150, 0.35);
-  backdrop-filter: blur(6px);
+  border-radius: 14px;
 }
 
+/* Angka */
 .time-box span {
-  display: block;
   font-size: 1.4rem;
   font-weight: 600;
-  color: var(--primary);
+  display: block;
 }
 
+/* Label */
 .time-box small {
   font-size: 0.65rem;
   letter-spacing: 1px;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
-/* desktop */
-@media (min-width: 768px) {
-  .time-box {
-    min-width: 90px;
-    padding: 15px 12px;
+/* ===== KHUSUS MOBILE ===== */
+@media (max-width: 480px) {
+  .countdown-wrapper {
+    gap: 6px;
   }
 
   .time-box span {
-    font-size: 1.8rem;
+    font-size: 1.1rem;
+  }
+
+  .time-box small {
+    font-size: 0.55rem;
   }
 }
+
 .event-date {
   text-align: center;
   margin-top: 18px;
@@ -1092,3 +1093,4 @@ body.dark-night .ig-credit {
 .hidden {
   display: none;
 }
+

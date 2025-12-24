@@ -1,326 +1,587 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Undangan Pernikahan - Romeo & Juliet</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #8a7051;
-            --secondary: #d4bc96;
-            --bg: #fdfaf5;
-            --text: #262626;
-            --ig-gray: #efefef;
-        }
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Scheherazade+New&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            font-family: 'Montserrat', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text); 
-            overflow: hidden; 
-            line-height: 1.6;
-        }
+  <!-- ===== NAVIGATION WIDGET ===== -->
+  <div class="nav-widget">
+    <button onclick="scrollToSection('hero')">🏠</button>
+    <button onclick="scrollToSection('pengantar-ayat')">📜</button>
+    <button onclick="scrollToSection('gallery')">📸</button>
+    <button onclick="scrollToSection('location')">📍</button>
+    <button onclick="scrollToSection('family')">👨‍👩‍👧‍👦</button>
+    <button onclick="scrollToSection('wedding-gift')">🎁</button>
+    <button onclick="scrollToSection('rsvp-section')">💬</button>
+  </div>
+  <body class="dark-night">
+    <div id="scroll-progress"></div>
+    <canvas id="goldSparkle"></canvas>
 
-        /* --- COVER --- */
-        #cover {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                        url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=1000') no-repeat center center/cover;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            color: white; text-align: center; z-index: 9999;
-            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
-            padding: 15px;
-        }
-        #cover.hide { transform: translateY(-100%); pointer-events: none; }
-        
-        .cover-box {
-            width: 100%; max-width: 350px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 30px 20px; border-radius: 20px; 
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        #cover h2 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; margin-bottom: 10px; }
+    <audio id="weddingMusic" preload="auto"></audio>
 
-        .btn-open {
-            display: inline-block; padding: 14px 35px; background: var(--primary);
-            color: white; text-decoration: none; border-radius: 50px;
-            border: none; cursor: pointer; font-weight: 600; font-size: 1rem;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            transition: 0.3s;
-        }
-
-        /* --- MUSIC CONTROL --- */
-        #music-control {
-            position: fixed; bottom: 20px; right: 20px; z-index: 999;
-            background: white; width: 45px; height: 45px; border-radius: 50%;
-            display: none; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 1px solid #ddd;
-        }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* --- CONTENT --- */
-        #main-content { display: none; opacity: 0; transition: opacity 1.5s; }
-        #main-content.show { display: block; opacity: 1; }
-
-        .hero { 
-            height: 100vh; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; background: #fff;
-            padding: 20px; text-align: center;
-        }
-        .hero h1 { font-family: 'Great Vibes', cursive; font-size: clamp(3.5rem, 15vw, 5.5rem); color: var(--primary); }
-
-        section { padding: 40px 15px; width: 100%; max-width: 600px; margin: auto; }
-
-        .card { 
-            background: white; padding: 25px 20px; border-radius: 20px; 
-            box-shadow: 0 5px 25px rgba(0,0,0,0.05); margin-bottom: 25px;
-            border: 1px solid #eee;
-        }
-        
-        input, select, textarea { 
-            width: 100%; padding: 12px; margin: 8px 0 15px 0; 
-            border-radius: 12px; border: 1px solid #ddd; 
-            background: #fafafa; font-size: 16px; font-family: inherit;
-        }
-        
-        input[readonly] { background: #f0f0f0; color: #777; cursor: not-allowed; }
-
-        /* --- COMMENTS --- */
-        #comment-section { max-height: 550px; overflow-y: auto; padding-right: 5px; }
-        .ig-comment { display: flex; gap: 10px; margin-bottom: 15px; }
-        .ig-avatar {
-            width: 35px; height: 35px; font-size: 0.8rem;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; flex-shrink: 0; font-weight: bold;
-        }
-        .ig-bubble { background: var(--ig-gray); padding: 10px 14px; border-radius: 18px; flex: 1; }
-        .ig-username { font-weight: 600; font-size: 0.8rem; display: block; color: #262626; }
-        .ig-text { font-size: 0.85rem; color: #333; }
-        .ig-meta { font-size: 0.7rem; color: #8e8e8e; margin-top: 4px; display: flex; gap: 12px; font-weight: 600; }
-        
-        .reply-container { margin-left: 45px; border-left: 2px solid #efefef; padding-left: 10px; margin-top: -10px; margin-bottom: 15px; }
-
-        #reply-indicator { 
-            background: #eef7ff; padding: 10px; border-radius: 10px; 
-            margin-bottom: 10px; font-size: 0.8rem; border-left: 4px solid #0095f6;
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            section { max-width: 900px; }
-            .rsvp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        }
-    </style>
-</head>
-<body>
-
-    <audio id="weddingMusic" loop>
-        <source src="music/OneinaMillion.mp3" type="audio/mpeg">
-    </audio>
-
-    <div id="music-control" onclick="toggleMusic()">
-        <span id="music-icon" style="font-size: 20px;">🎵</span>
+    <div id="music-control" class="music-control">
+      <button id="music-toggle" onclick="toggleMusic()">
+        <span id="music-icon">🎵</span>
+      </button>
+      <button id="music-next" onclick="nextMusic()">⏭</button>
     </div>
 
+    <!-- <div id="theme-toggle" onclick="toggleTheme()">🌙</div> -->
+
     <div id="cover">
-        <div class="cover-box">
-            <p style="letter-spacing: 3px; font-size: 0.7rem; margin-bottom: 5px;">THE WEDDING OF</p>
-            <h2>Romeo & Juliet</h2>
-            <div style="margin: 25px 0;">
-                <p style="font-size: 0.85rem; opacity: 0.9;">Kepada Yth:</p>
-                <h3 id="guest-display" style="color: var(--secondary); font-size: 1.6rem; margin-top: 5px;">Memuat Nama...</h3>
-            </div>
-            <button class="btn-open" onclick="bukaUndangan()">Buka Undangan</button>
+      <div class="cover-box">
+        <p style="letter-spacing: 3px; font-size: 0.7rem; margin-bottom: 5px">
+          THE WEDDING OF
+        </p>
+        <h2>Romeo & Juliet</h2>
+        <div style="margin: 25px 0">
+          <p style="font-size: 0.85rem; opacity: 0.9">Kepada Yth:</p>
+          <h3
+            id="guest-display"
+            style="color: var(--secondary); font-size: 1.6rem; margin-top: 5px"
+          >
+            Memuat Nama...
+          </h3>
         </div>
+        <button class="btn-open" onclick="bukaUndangan()">Buka Undangan</button>
+      </div>
     </div>
 
     <div id="main-content">
-        <div class="hero">
-            <h1 data-aos="zoom-in">Romeo & Juliet</h1>
-            <p data-aos="fade-up" style="letter-spacing: 3px; font-weight: 600;">25 . 12 . 2025</p>
-        </div>
+      <section id="hero" class="hero">
+        <div class="flower-frame" data-aos="zoom-in">
+          <img
+            src="img/kiriatas.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <h1>Romeo & Juliet</h1>
+          <div class="event-date">
+            <span id="event-day">Kamis</span>
+            <h3 id="event-date">25 Desember 2025</h3>
+          </div>
 
-        <section id="rsvp-section">
-            <h2 style="font-family: 'Great Vibes'; font-size: 3rem; text-align: center; color: var(--primary); margin-bottom: 30px;">Doa Restu</h2>
-            
-            <div class="rsvp-grid">
-                <div class="card" data-aos="fade-up">
-                    <div id="reply-indicator">
-                        <span>Membalas <b id="reply-to-name"></b></span>
-                        <span onclick="cancelReply()" style="float:right; color:red; cursor:pointer; font-weight:bold;">Batal</span>
-                    </div>
-                    <form id="rsvp-form">
-                        <input type="hidden" name="replyID" id="form-replyID">
-                        <label>NAMA</label>
-                        <input type="text" name="nama" id="form-nama" readonly required>
-                        
-                        <label>KEHADIRAN</label>
-                        <select name="kehadiran">
-                            <option value="Hadir">Akan Hadir</option>
-                            <option value="Tidak Hadir">Berhalangan</option>
-                        </select>
-                        
-                        <label>PESAN DOA</label>
-                        <textarea name="pesan" id="form-pesan" rows="4" placeholder="Tulis ucapan doa..." required></textarea>
-                        
-                        <button type="submit" id="submit-btn" class="btn-open" style="width: 100%;">Kirim Pesan</button>
-                    </form>
-                </div>
-
-                <div class="card" data-aos="fade-up">
-                    <p style="font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid #f0f0f0; padding-bottom: 10px;">Pesan Tamu</p>
-                    <div id="comment-section">
-                        <div id="comment-container">
-                            <p style="text-align: center; color: #999; font-size: 0.8rem;">Memuat pesan...</p>
-                        </div>
-                    </div>
-                </div>
+          <div class="countdown-wrapper" id="countdown">
+            <div class="time-box">
+              <span id="days">00</span>
+              <small>Hari</small>
             </div>
-        </section>
+            <div class="time-box">
+              <span id="hours">00</span>
+              <small>Jam</small>
+            </div>
+            <div class="time-box">
+              <span id="minutes">00</span>
+              <small>Menit</small>
+            </div>
+            <div class="time-box">
+              <span id="seconds">00</span>
+              <small>Detik</small>
+            </div>
+          </div>
+
+          <img
+            src="img/kananbawah.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+        </div>
+      </section>
+
+      <section id="pengantar-ayat" data-aos="fade-up">
+        <div class="flower-frame">
+          <img
+            src="img/kiri1.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <img
+            src="img/kiri2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-left"
+          />
+          <img
+            src="img/kanan1.png"
+            alt="Ornamen"
+            class="flower-corner top-right"
+          />
+          <img
+            src="img/kanan2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+          <h2 class="section-title">Kata Pengantar</h2>
+
+          <p class="pengantar-text">
+            <b>Assalamu’alaikum Warahmatullahi Wabarakatuh</b><br /><br />
+
+            Dengan memohon rahmat dan ridho Allah Subhanahu wa Ta’ala, kami
+            bermaksud menyelenggarakan pernikahan putra-putri kami, yang
+            InsyaAllah akan dilaksanakan pada waktu dan tempat sebagaimana
+            tercantum di bawah ini.<br /><br />
+
+            Merupakan suatu kehormatan dan kebahagiaan bagi kami, apabila
+            Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.<br /><br />
+          </p>
+
+          <!-- AYAT -->
+          <div class="ayat-wrapper">
+            <p class="ayat-surah">QS. Ar-Rum : 21</p>
+
+            <p class="ayat-arab">
+              وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُمْ مِنْ أَنْفُسِكُمْ أَزْوَاجًا
+              لِتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَوَدَّةً وَرَحْمَةً ۚ
+              إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِقَوْمٍ يَتَفَكَّرُونَ
+            </p>
+
+            <p class="ayat-arti">
+              “Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan
+              pasangan-pasangan untukmu dari jenismu sendiri, agar kamu merasa
+              tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan
+              sayang.”
+            </p>
+          </div>
+
+          <p class="pengantar-text">
+            Atas kehadiran dan doa restu Bapak/Ibu/Saudara/i, kami ucapkan
+            terima kasih.<br /><br />
+
+            <b>Wassalamu’alaikum Warahmatullahi Wabarakatuh</b>
+          </p>
+        </div>
+      </section>
+
+      <section id="gallery" data-aos="fade-up">
+        <div class="flower-frame">
+          <img
+            src="img/kiri1.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <img
+            src="img/kiri2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-left"
+          />
+          <img
+            src="img/kanan1.png"
+            alt="Ornamen"
+            class="flower-corner top-right"
+          />
+          <img
+            src="img/kanan2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+          <div class="gallery-header">
+            <span class="gallery-subtitle">OUR MOMENT</span>
+            <h2>Galeri Foto</h2>
+            <div class="gallery-divider"></div>
+            <p class="gallery-desc">KISAH CINTA KAMI</p>
+          </div>
+          <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <img src="img/1.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/2.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/3.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/4.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/5.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/6.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/7.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/8.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/9.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+              <div class="swiper-slide">
+                <img src="img/10.png" />
+                <div class="photo-caption">Romeo & Juliet</div>
+              </div>
+            </div>
+            <div class="swiper-pagination"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="location" data-aos="fade-up">
+        <div class="flower-frame">
+          <img
+            src="img/kiri1.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <img
+            src="img/kiri2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-left"
+          />
+          <img
+            src="img/kanan1.png"
+            alt="Ornamen"
+            class="flower-corner top-right"
+          />
+          <img
+            src="img/kanan2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+          <h2
+            style="
+              font-family: 'Great Vibes';
+              font-size: 3.5rem;
+              text-align: center;
+              color: var(--primary);
+              margin-bottom: 30px;
+            "
+          >
+            Lokasi Acara
+          </h2>
+          <div class="location-card" data-aos="fade-right">
+            <span class="location-title">Kediaman Mempelai Wanita</span>
+            <p style="font-size: 0.9rem; color: #888">
+              (Akad Nikah & Resepsi I)
+            </p>
+            <p style="margin-top: 15px; font-size: 0.95rem">
+              Jl. Melati No. 45, RT 01/RW 02<br />
+              Kel. Verona, Kec. Cinta Damai<br />
+              Kota Administrasi Jakarta Pusat
+            </p>
+            <a href="#" target="_blank" class="btn-action">Buka Google Maps</a>
+          </div>
+          <div class="location-card" data-aos="fade-left">
+            <span class="location-title">Kediaman Mempelai Pria</span>
+            <p style="font-size: 0.9rem; color: #888">
+              (Ngunduh Mantu / Resepsi II)
+            </p>
+            <p style="margin-top: 15px; font-size: 0.95rem">
+              Jl. Elang No. 88, Cluster Harmoni<br />
+              Kec. Menteng, Jakarta Pusat<br />
+              DKI Jakarta
+            </p>
+            <a href="#" target="_blank" class="btn-action">Buka Google Maps</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="family" data-aos="fade-up">
+        <div class="flower-frame">
+          <img
+            src="img/kiri1.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <img
+            src="img/kiri2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-left"
+          />
+          <img
+            src="img/kanan1.png"
+            alt="Ornamen"
+            class="flower-corner top-right"
+          />
+          <img
+            src="img/kanan2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+          <h2
+            style="
+              font-family: 'Great Vibes';
+              font-size: 3.5rem;
+              text-align: center;
+              color: var(--primary);
+              margin-bottom: 10px;
+            "
+          >
+            Keluarga Besar
+          </h2>
+
+          <p
+            style="
+              text-align: center;
+              font-size: 0.8rem;
+              letter-spacing: 2px;
+              color: var(--secondary);
+              margin-bottom: 40px;
+            "
+          >
+            MEMPELAI PRIA & WANITA
+          </p>
+
+          <div class="family-grid">
+            <!-- MEMPELAI WANITA -->
+            <div class="family-card" data-aos="fade-right">
+              <p class="family-role">Mempelai Wanita</p>
+              <h3 class="family-name">Juliet Capulet</h3>
+
+              <p class="family-parent">
+                Putri dari pasangan<br />
+                <b>Bapak Lorenzo Capulet</b><br />
+                &<br />
+                <b>Ibu Maria Capulet</b>
+              </p>
+
+              <p class="family-address">
+                Keluarga Besar Capulet<br />
+                Kelurahan Verona Selatan
+              </p>
+            </div>
+
+            <!-- MEMPELAI PRIA -->
+            <div class="family-card" data-aos="fade-left">
+              <p class="family-role">Mempelai Pria</p>
+              <h3 class="family-name">Romeo Montague</h3>
+
+              <p class="family-parent">
+                Putra dari pasangan<br />
+                <b>Bapak Antonio Montague</b><br />
+                &<br />
+                <b>Ibu Isabella Montague</b>
+              </p>
+
+              <p class="family-address">
+                Keluarga Besar Montague<br />
+                Kelurahan Verona Utara
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="wedding-gift" data-aos="fade-up">
+        <div class="flower-frame">
+          <img
+            src="img/kiri1.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <img
+            src="img/kiri2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-left"
+          />
+          <img
+            src="img/kanan1.png"
+            alt="Ornamen"
+            class="flower-corner top-right"
+          />
+          <img
+            src="img/kanan2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+          <h2
+            style="
+              font-family: 'Great Vibes';
+              font-size: 3rem;
+              text-align: center;
+              color: var(--primary);
+              margin-bottom: 20px;
+            "
+          >
+            Kado Digital
+          </h2>
+          <div class="gift-card" data-aos="zoom-in">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
+              alt="BCA"
+              style="width: 80px; margin-bottom: 10px"
+            />
+            <p
+              style="font-weight: 600; font-size: 1.2rem; margin-bottom: 5px"
+              id="rek-bca"
+            >
+              1234567890
+            </p>
+            <p style="font-size: 0.85rem; color: #777; letter-spacing: 1px">
+              A.N ROMEO MONTAGUE
+            </p>
+            <button class="btn-action" onclick="copyToClipboard('rek-bca')">
+              Salin Rekening
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="rsvp-section">
+        <div class="flower-frame">
+          <img
+            src="img/kiri1.png"
+            alt="Ornamen"
+            class="flower-corner top-left"
+          />
+          <img
+            src="img/kiri2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-left"
+          />
+          <img
+            src="img/kanan1.png"
+            alt="Ornamen"
+            class="flower-corner top-right"
+          />
+          <img
+            src="img/kanan2.png"
+            alt="Ornamen"
+            class="flower-corner bottom-right"
+          />
+          <h2
+            style="
+              font-family: 'Great Vibes';
+              font-size: 3.5rem;
+              text-align: center;
+              color: var(--primary);
+              margin-bottom: 30px;
+            "
+          >
+            Doa Restu
+          </h2>
+          <div class="rsvp-grid">
+            <div class="card">
+              <div id="reply-indicator">
+                <span>Membalas <b id="reply-to-name"></b></span>
+                <span
+                  onclick="cancelReply()"
+                  style="
+                    float: right;
+                    color: red;
+                    cursor: pointer;
+                    font-weight: bold;
+                  "
+                  >Batal</span
+                >
+              </div>
+              <form id="rsvp-form">
+                <input type="hidden" name="replyID" id="form-replyID" />
+                <label>NAMA</label>
+                <input
+                  type="text"
+                  name="nama"
+                  id="form-nama"
+                  readonly
+                  required
+                />
+                <label>KEHADIRAN</label>
+                <select name="kehadiran">
+                  <option value="Hadir">Akan Hadir</option>
+                  <option value="Tidak Hadir">Berhalangan</option>
+                </select>
+                <label>PESAN DOA</label>
+                <textarea
+                  name="pesan"
+                  id="form-pesan"
+                  rows="4"
+                  placeholder="Tulis ucapan doa..."
+                  required
+                ></textarea>
+                <button
+                  type="submit"
+                  id="submit-btn"
+                  class="btn-open"
+                  style="width: 100%"
+                >
+                  Kirim Pesan
+                </button>
+              </form>
+            </div>
+            <div class="card">
+              <p
+                style="
+                  font-weight: 600;
+                  margin-bottom: 15px;
+                  border-bottom: 1px solid #f0f0f0;
+                  padding-bottom: 10px;
+                "
+              >
+                Pesan Tamu
+              </p>
+              <div id="comment-section">
+                <div id="comment-container">
+                  <p style="text-align: center; color: #999; font-size: 0.8rem">
+                    Memuat pesan...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <footer class="credit-footer">
+        <span> © 2025 · Tawa ft. AI</span>
+        <a
+          href="https://instagram.com/ahmad_agung_tawakkal"
+          target="_blank"
+          class="ig-credit"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37a4 4 0 1 1-7.37-2.74"></path>
+            <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line>
+          </svg>
+          <strong>@ahmad_agung_tawakkal</strong>
+        </a>
+      </footer>
     </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwgYcxOMLnSSJU0Feg5uyoaQtZxLDXUevAwySwdc9PiQaKbuhjC6nZt_CySFkCtyMuc/exec';
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-        // PENGAMBILAN NAMA FULL
-        const urlParams = new URLSearchParams(window.location.search);
-        const rawTamu = urlParams.get('to');
-        const tamu = rawTamu ? decodeURIComponent(rawTamu.replace(/\+/g, ' ')) : "Tamu Undangan";
-        
-        document.getElementById("guest-display").innerText = tamu;
-        document.getElementById("form-nama").value = tamu;
-
-        // VARIABEL MUSIK
-        const myAudio = document.getElementById("weddingMusic");
-        const musicBtn = document.getElementById("music-control");
-        const musicIcon = document.getElementById("music-icon");
-
-        function bukaUndangan() {
-            // Sembunyikan cover
-            document.getElementById('cover').classList.add('hide');
-            document.getElementById('main-content').classList.add('show');
-            document.body.style.overflow = 'auto';
-            
-            // Putar Musik
-            myAudio.play().catch(e => console.log("Autoplay dicegah"));
-            
-            // Tampilkan kontrol musik
-            musicBtn.style.display = 'flex';
-            musicBtn.style.animation = "spin 4s linear infinite";
-
-            AOS.init({ duration: 1000, once: true });
-            loadComments();
-        }
-
-        function toggleMusic() {
-            if (myAudio.paused) {
-                myAudio.play();
-                musicIcon.innerText = "🎵";
-                musicBtn.style.animation = "spin 4s linear infinite";
-            } else {
-                myAudio.pause();
-                musicIcon.innerText = "🔇";
-                musicBtn.style.animation = "none";
-            }
-        }
-
-        function setReply(id, name) {
-            document.getElementById('form-replyID').value = id;
-            document.getElementById('reply-indicator').style.display = 'block';
-            document.getElementById('reply-to-name').innerText = '@' + name;
-            document.getElementById('form-pesan').value = '@' + name + ' ';
-            document.getElementById('form-pesan').focus();
-        }
-
-        function cancelReply() {
-            document.getElementById('form-replyID').value = '';
-            document.getElementById('reply-indicator').style.display = 'none';
-        }
-
-        function loadComments() {
-            const container = document.getElementById('comment-container');
-            fetch(scriptURL)
-            .then(res => res.json())
-            .then(data => {
-                container.innerHTML = '';
-                if(!data || data.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#999; font-size:0.8rem;">Belum ada ucapan.</p>';
-                    return;
-                }
-
-                const mains = data.filter(i => !i.replyID || i.replyID === "");
-                const replies = data.filter(i => i.replyID && i.replyID !== "");
-
-                mains.reverse().forEach(m => {
-                    const user = (m.nama || "Tamu").replace(/\s+/g, '_').toLowerCase();
-                    let html = `
-                        <div class="ig-comment" id="msg-${m.id}">
-                            <div class="ig-avatar">${(m.nama || "T").charAt(0).toUpperCase()}</div>
-                            <div class="ig-bubble">
-                                <span class="ig-username">${user}</span>
-                                <span class="ig-text">${m.pesan}</span>
-                                <div class="ig-meta">
-                                    <span onclick="setReply('${m.id}', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span>
-                                </div>
-                            </div>
-                        </div>`;
-                    
-                    const sub = replies.filter(r => String(r.replyID) === String(m.id));
-                    if(sub.length > 0) {
-                        html += '<div class="reply-container">';
-                        sub.forEach(s => {
-                            const sUser = (s.nama || "Tamu").replace(/\s+/g, '_').toLowerCase();
-                            html += `
-                                <div class="ig-comment">
-                                    <div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${sUser.charAt(0).toUpperCase()}</div>
-                                    <div class="ig-bubble">
-                                        <span class="ig-username">${sUser}</span>
-                                        <span class="ig-text">${s.pesan}</span>
-                                    </div>
-                                </div>`;
-                        });
-                        html += '</div>';
-                    }
-                    container.innerHTML += html;
-                });
-            });
-        }
-
-        const form = document.getElementById('rsvp-form');
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            const btn = document.getElementById('submit-btn');
-            const pesan = document.getElementById('form-pesan').value;
-
-            const container = document.getElementById('comment-container');
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = `<div class="ig-comment" style="opacity:0.5">
-                <div class="ig-avatar">${tamu.charAt(0)}</div>
-                <div class="ig-bubble"><span class="ig-username">${tamu.toLowerCase()}</span><span class="ig-text">${pesan}</span></div>
-            </div>`;
-            container.prepend(tempDiv);
-
-            btn.disabled = true; btn.innerText = "Mengirim...";
-
-            fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' })
-            .then(() => {
-                btn.disabled = false; btn.innerText = "Kirim Pesan Lagi";
-                form.reset(); 
-                document.getElementById("form-nama").value = tamu;
-                cancelReply();
-                setTimeout(loadComments, 2000);
-            });
-        });
-    </script>
-</body>
+    <script src="js/script.js"></script>
+  </body>
 </html>

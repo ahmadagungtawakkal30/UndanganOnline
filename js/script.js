@@ -40,8 +40,8 @@ const myAudio = document.getElementById("weddingMusic");
 const playBtn = document.getElementById("music-toggle");
 
 const musicList = [
-  "music/UntilIFoundYou.mp3",
   "music/BecauseYouLovedMe.mp3",
+  "music/UntilIFoundYou.mp3",
   "music/OneinaMillion.mp3",
 ];
 
@@ -274,7 +274,8 @@ window.addEventListener("scroll", () => {
 });
 
 //hitungan mundur jadwal resepsi
-const targetDate = new Date(2025, 12, 10, 8, 0, 0);
+// const targetDate = new Date(2025, 12, 10, 8, 0, 0);
+const targetDate = new Date("2025-12-10T08:00:00");
 
 // ELEMENT
 const daysEl = document.getElementById("days");
@@ -350,6 +351,7 @@ window.addEventListener("scroll", () => {
 
   document.getElementById("scroll-progress").style.width = progress + "%";
 });
+
 
 
 

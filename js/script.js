@@ -352,6 +352,15 @@ window.addEventListener("scroll", () => {
   document.getElementById("scroll-progress").style.width = progress + "%";
 });
 
+function toggleNav() {
+  const nav = document.getElementById("navWidget");
+  nav.classList.toggle("closed");
+}
+if (window.innerWidth < 600) {
+  document.getElementById("navWidget").classList.add("closed");
+}
+
+
 
 
 

@@ -429,13 +429,13 @@
    GLOBAL FUNCTIONS
 ========================= */
 
-// ===== NAV WIDGET TOGGLE (GLOBAL for onclick) =====
-function toggleNav() {
+// ===== NAV WIDGET TOGGLE =====
+window.toggleNav = function () {
   const nav = document.getElementById("navWidget");
   if (!nav) return;
   nav.classList.toggle("closed");
   nav.classList.toggle("nav-open");
-}
+};
 
 // ===== THEME =====
 function toggleTheme() {

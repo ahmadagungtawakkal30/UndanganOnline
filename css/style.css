@@ -604,10 +604,43 @@ body.dark-night .btn-action:hover {
   backdrop-filter: blur(6px);
 }
 
-/* tombol toggle */
 .nav-toggle {
-  background: var(--primary);
-  font-size: 1.1rem;
+  all: unset;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.9);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .3s ease;
+}
+
+.nav-toggle:active {
+  transform: scale(.9);
+}
+
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  stroke: #555;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: .4s ease;
+}
+
+/* SAAT NAV OPEN */
+.nav-open .menu-icon line:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+.nav-open .menu-icon line:nth-child(2) {
+  opacity: 0;
+}
+.nav-open .menu-icon line:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
 }
 
 /* ===== MODE TERTUTUP ===== */
@@ -1159,6 +1192,7 @@ body.dark-night .ig-credit {
 .hidden {
   display: none;
 }
+
 
 
 

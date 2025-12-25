@@ -156,7 +156,11 @@ async function bukaUndangan() {
   const nama = new URLSearchParams(window.location.search).get("to");
 
   if (!nama) {
-    notify("Link Tidak Valid", "Undangan ini tidak memiliki nama tamu.");
+    notify(
+      "Link Tidak Valid",
+      "Undangan ini tidak memiliki nama tamu.",
+      "error"
+    );
     return;
   }
 

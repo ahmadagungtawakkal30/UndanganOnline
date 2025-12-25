@@ -40,9 +40,9 @@ const myAudio = document.getElementById("weddingMusic");
 const playBtn = document.getElementById("music-toggle");
 
 const musicList = [
-  "music/OneinaMillion.mp3",
   "music/UntilIFoundYou.mp3",
   "music/BecauseYouLovedMe.mp3",
+  "music/OneinaMillion.mp3",
 ];
 
 let currentTrack = 0;
@@ -350,3 +350,4 @@ window.addEventListener("scroll", () => {
 
   document.getElementById("scroll-progress").style.width = progress + "%";
 });
+

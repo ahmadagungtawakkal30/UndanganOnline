@@ -370,18 +370,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (progEl) progEl.style.width = progress + "%";
   });
 
-  // nav toggle
-  function toggleNav() {
-    document.body.classList.toggle("nav-open");
-    const navWidget = document.querySelector(".nav-widget");
-    if (navWidget) navWidget.classList.toggle("open");
-    const btn = document.querySelector('.nav-toggle');
-    if (btn) {
-      const expanded = btn.getAttribute('aria-expanded') === 'true';
-      btn.setAttribute('aria-expanded', String(!expanded));
-    }
-  }
-  window.toggleNav = toggleNav;
+  // ===== NAV WIDGET TOGGLE =====
+const navWidget = document.getElementById("navWidget");
+const navToggle = document.querySelector(".nav-toggle");
+
+let navOpen = true;
+
+function toggleNav() {
+  navOpen = !navOpen;
+
+  navWidget.classList.toggle("closed", !navOpen);
+  navToggle.setAttribute("aria-expanded", navOpen);
+}
 
   if (window.innerWidth < 600) {
     const navWidgetEl = document.getElementById("navWidget");

@@ -413,10 +413,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let navOpen = true;
 
   function toggleNav() {
-    navOpen = !navOpen;
-
-    navWidget.classList.toggle("closed", !navOpen);
-    navToggle.setAttribute("aria-expanded", navOpen);
+    const nav = document.getElementById("navWidget");
+    nav.classList.toggle("closed");
   }
 
   if (window.innerWidth < 600) {

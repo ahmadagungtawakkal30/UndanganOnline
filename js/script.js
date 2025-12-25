@@ -353,12 +353,14 @@ window.addEventListener("scroll", () => {
 });
 
 function toggleNav() {
-  const nav = document.getElementById("navWidget");
-  nav.classList.toggle("closed");
+  document.body.classList.toggle("nav-open");
+  document.querySelector(".nav-widget").classList.toggle("open");
 }
+
 if (window.innerWidth < 600) {
   document.getElementById("navWidget").classList.add("closed");
 }
+
 
 
 

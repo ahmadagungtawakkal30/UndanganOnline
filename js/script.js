@@ -275,7 +275,7 @@ window.addEventListener("scroll", () => {
 
 //hitungan mundur jadwal resepsi
 // const targetDate = new Date(2025, 12, 10, 8, 0, 0);
-const targetDate = new Date("2025-12-10T08:00:00");
+const targetDate = new Date("2025-12-31T08:00:00");
 
 // ELEMENT
 const daysEl = document.getElementById("days");
@@ -351,6 +351,7 @@ window.addEventListener("scroll", () => {
 
   document.getElementById("scroll-progress").style.width = progress + "%";
 });
+
 
 
 

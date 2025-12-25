@@ -189,12 +189,22 @@ function loadComments() {
       const replies = data.filter((i) => i.replyID);
       mains.reverse().forEach((m) => {
         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
-        let html = `<div class="ig-comment"><div class="ig-avatar">${m.nama.charAt(0)}</div><div class="ig-bubble"><span class="ig-username">${user}</span><span class="ig-text">${m.pesan}</span><div class="ig-meta"><span onclick="setReply('${m.id}', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span></div></div></div>`;
+        let html = `<div class="ig-comment"><div class="ig-avatar">${m.nama.charAt(
+          0
+        )}</div><div class="ig-bubble"><span class="ig-username">${user}</span><span class="ig-text">${
+          m.pesan
+        }</span><div class="ig-meta"><span onclick="setReply('${
+          m.id
+        }', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span></div></div></div>`;
         const sub = replies.filter((r) => String(r.replyID) === String(m.id));
         if (sub.length > 0) {
           html += '<div class="reply-container">';
           sub.forEach((s) => {
-            html += `<div class="ig-comment"><div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${s.nama.charAt(0)}</div><div class="ig-bubble"><span class="ig-username">${s.nama.toLowerCase()}</span><span class="ig-text">${s.pesan}</span></div></div>`;
+            html += `<div class="ig-comment"><div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${s.nama.charAt(
+              0
+            )}</div><div class="ig-bubble"><span class="ig-username">${s.nama.toLowerCase()}</span><span class="ig-text">${
+              s.pesan
+            }</span></div></div>`;
           });
           html += "</div>";
         }
@@ -239,7 +249,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const sparkleCanvas = document.getElementById("goldSparkle");
   if (sparkleCanvas && sparkleCanvas.getContext) {
     const sCtx = sparkleCanvas.getContext("2d");
-    let sw, sh, sparks = [];
+    let sw,
+      sh,
+      sparks = [];
     function resizeSparkle() {
       sw = sparkleCanvas.width = window.innerWidth;
       sh = sparkleCanvas.height = window.innerHeight;
@@ -280,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // smooth scroll
-  window.scrollToSection = function(id) {
+  window.scrollToSection = function (id) {
     const target = document.getElementById(id);
     if (target) target.scrollIntoView({ behavior: "smooth" });
   };
@@ -327,12 +339,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const eventDateEl = document.getElementById("event-date");
   const eventDayEl = document.getElementById("event-day");
 
-  const dayNames = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-  const monthNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+  const dayNames = [
+    "Minggu",
+    "Senin",
+    "Selasa",
+    "Rabu",
+    "Kamis",
+    "Jumat",
+    "Sabtu",
+  ];
+  const monthNames = [
+    "Januari",
+    "Februari",
+    "Maret",
+    "April",
+    "Mei",
+    "Juni",
+    "Juli",
+    "Agustus",
+    "September",
+    "Oktober",
+    "November",
+    "Desember",
+  ];
 
   if (eventDayEl && eventDateEl) {
     eventDayEl.textContent = dayNames[targetDate.getDay()];
-    eventDateEl.textContent = `${targetDate.getDate()} ${monthNames[targetDate.getMonth()]} ${targetDate.getFullYear()}`;
+    eventDateEl.textContent = `${targetDate.getDate()} ${
+      monthNames[targetDate.getMonth()]
+    } ${targetDate.getFullYear()}`;
   }
 
   function updateCountdown() {
@@ -364,24 +399,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // scroll progress
   window.addEventListener("scroll", () => {
     const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const docHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
     const progress = (scrollTop / docHeight) * 100;
     const progEl = document.getElementById("scroll-progress");
     if (progEl) progEl.style.width = progress + "%";
   });
 
   // ===== NAV WIDGET TOGGLE =====
-const navWidget = document.getElementById("navWidget");
-const navToggle = document.querySelector(".nav-toggle");
+  const navWidget = document.getElementById("navWidget");
+  const navToggle = document.querySelector(".nav-toggle");
 
-let navOpen = true;
+  let navOpen = true;
 
-function toggleNav() {
-  navOpen = !navOpen;
+  function toggleNav() {
+    navOpen = !navOpen;
 
-  navWidget.classList.toggle("closed", !navOpen);
-  navToggle.setAttribute("aria-expanded", navOpen);
-}
+    navWidget.classList.toggle("closed", !navOpen);
+    navToggle.setAttribute("aria-expanded", navOpen);
+  }
 
   if (window.innerWidth < 600) {
     const navWidgetEl = document.getElementById("navWidget");

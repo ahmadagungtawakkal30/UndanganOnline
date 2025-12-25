@@ -415,6 +415,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function toggleNav() {
     const nav = document.getElementById("navWidget");
     nav.classList.toggle("closed");
+    nav.classList.toggle("nav-open");
   }
 
   if (window.innerWidth < 600) {

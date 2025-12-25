@@ -613,8 +613,8 @@ body.dark-night .btn-action:hover {
 .nav-widget.closed {
   transform: translateY(120%);
   opacity: 0;
-  pointer-events: none;
 }
+
 
 /* tombol menu premium */
 .nav-toggle {

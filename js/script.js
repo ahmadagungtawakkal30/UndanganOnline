@@ -29,7 +29,7 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbwgYcxOMLnSSJU0Feg5uyoaQtZxLDXUevAwySwdc9PiQaKbuhjC6nZt_CySFkCtyMuc/exec";
+  "https://script.google.com/macros/s/AKfycbwSejCm4FihFoJjsQsYPoPIPUBjmRvcxwlbCPVjarXmGC7Cp-I4jKmQs-uyIrdjHcgj/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
 const tamu = decodeURIComponent(urlParams.get("to") || "Tamu Undangan").replace(
@@ -130,26 +130,77 @@ function copyToClipboard(elementId) {
   }
 }
 
-function bukaUndangan() {
-  const coverEl = document.getElementById("cover");
-  const mainContentEl = document.getElementById("main-content");
-  if (coverEl) coverEl.classList.add("hide");
-  if (mainContentEl) mainContentEl.classList.add("show");
-  document.body.style.overflow = "auto";
+// function bukaUndangan() {
+//   const coverEl = document.getElementById("cover");
+//   const mainContentEl = document.getElementById("main-content");
+//   if (coverEl) coverEl.classList.add("hide");
+//   if (mainContentEl) mainContentEl.classList.add("show");
+//   document.body.style.overflow = "auto";
 
-  if (myAudio) {
-    myAudio.play().catch(() => {});
-    if (musicBtn) musicBtn.style.display = "flex";
-    if (playBtn) playBtn.style.animation = "spin 4s linear infinite";
+//   if (myAudio) {
+//     myAudio.play().catch(() => {});
+//     if (musicBtn) musicBtn.style.display = "flex";
+//     if (playBtn) playBtn.style.animation = "spin 4s linear infinite";
+//   }
+
+//   if (window.AOS) AOS.init({ duration: 1200, once: true });
+//   if (typeof loadComments === "function") loadComments();
+//   setTimeout(() => {
+//     try {
+//       if (swiper && typeof swiper.update === "function") swiper.update();
+//     } catch (e) {}
+//   }, 500);
+// }
+
+async function bukaUndangan() {
+  const nama = new URLSearchParams(window.location.search).get("to");
+
+  if (!nama) {
+    notify("Link Tidak Valid", "Undangan ini tidak memiliki nama tamu.");
+    return;
   }
 
-  if (window.AOS) AOS.init({ duration: 1200, once: true });
-  if (typeof loadComments === "function") loadComments();
-  setTimeout(() => {
-    try {
-      if (swiper && typeof swiper.update === "function") swiper.update();
-    } catch (e) {}
-  }, 500);
+  showLoading(true);
+
+  try {
+    const res = await fetch(
+      scriptURL + "?action=checkGuest&name=" + encodeURIComponent(nama)
+    );
+
+    const data = await res.json();
+
+    showLoading(false);
+
+    if (!data.valid) {
+      notify(
+        "Undangan Tidak Terdaftar",
+        "Maaf, nama Anda tidak ditemukan di daftar tamu.",
+        "error"
+      );
+      return;
+    }
+
+    // ===== BUKA UNDANGAN =====
+    document.getElementById("cover")?.classList.add("hide");
+    document.getElementById("main-content")?.classList.add("show");
+    document.body.style.overflow = "auto";
+
+    if (myAudio) {
+      myAudio.play().catch(() => {});
+      musicBtn.style.display = "flex";
+      playBtn.style.animation = "spin 4s linear infinite";
+    }
+
+    AOS?.init({ duration: 1200, once: true });
+    loadComments?.();
+  } catch (err) {
+    showLoading(false);
+    notify(
+      "Terjadi Kesalahan",
+      "Gagal memverifikasi undangan. Silakan coba lagi."
+    );
+    console.error(err);
+  }
 }
 
 function setReply(id, name) {
@@ -173,47 +224,149 @@ function cancelReply() {
   if (replyIndicator) replyIndicator.style.display = "none";
 }
 
+// function loadComments() {
+//   const container = document.getElementById("comment-container");
+//   if (!container) return;
+//   fetch(scriptURL)
+//     .then((res) => res.json())
+//     .then((data) => {
+//       container.innerHTML = "";
+//       if (!data || data.length === 0) {
+//         container.innerHTML =
+//           '<p style="text-align:center; color:#999; font-size:0.8rem;">Belum ada ucapan.</p>';
+//         return;
+//       }
+//       const mains = data.filter((i) => !i.replyID);
+//       const replies = data.filter((i) => i.replyID);
+//       mains.reverse().forEach((m) => {
+//         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
+//         let html = `<div class="ig-comment"><div class="ig-avatar">${m.nama.charAt(
+//           0
+//         )}</div><div class="ig-bubble"><span class="ig-username">${user}</span><span class="ig-text">${
+//           m.pesan
+//         }</span><div class="ig-meta"><span onclick="setReply('${
+//           m.id
+//         }', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span></div></div></div>`;
+//         const sub = replies.filter((r) => String(r.replyID) === String(m.id));
+//         if (sub.length > 0) {
+//           html += '<div class="reply-container">';
+//           sub.forEach((s) => {
+//             html += `<div class="ig-comment"><div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${s.nama.charAt(
+//               0
+//             )}</div><div class="ig-bubble"><span class="ig-username">${s.nama.toLowerCase()}</span><span class="ig-text">${
+//               s.pesan
+//             }</span></div></div>`;
+//           });
+//           html += "</div>";
+//         }
+//         container.innerHTML += html;
+//       });
+//     })
+//     .catch((err) => {
+//       // ignore fetch errors (e.g., CORS) but keep app working
+//     });
+// }
+
+function formatDate(dateString) {
+  const d = new Date(dateString);
+  return d.toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function loadComments() {
   const container = document.getElementById("comment-container");
   if (!container) return;
-  fetch(scriptURL)
+
+  fetch(scriptURL + "?action=getMessages")
     .then((res) => res.json())
     .then((data) => {
       container.innerHTML = "";
-      if (!data || data.length === 0) {
+
+      if (!Array.isArray(data) || data.length === 0) {
         container.innerHTML =
-          '<p style="text-align:center; color:#999; font-size:0.8rem;">Belum ada ucapan.</p>';
+          '<p style="text-align:center; color:#999; font-size:.8rem;">Belum ada ucapan.</p>';
         return;
       }
+
       const mains = data.filter((i) => !i.replyID);
       const replies = data.filter((i) => i.replyID);
+
       mains.reverse().forEach((m) => {
         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
-        let html = `<div class="ig-comment"><div class="ig-avatar">${m.nama.charAt(
-          0
-        )}</div><div class="ig-bubble"><span class="ig-username">${user}</span><span class="ig-text">${
-          m.pesan
-        }</span><div class="ig-meta"><span onclick="setReply('${
-          m.id
-        }', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span></div></div></div>`;
+
+        let html = `
+          <div class="ig-comment">
+            <div class="ig-avatar">${m.nama.charAt(0)}</div>
+            <div class="ig-bubble">
+              <span class="ig-username">${user}</span>
+              <span class="ig-text">${m.pesan}</span>
+              <span class="ig-time">${formatDate(m.waktu)}</span>              
+              <div class="ig-meta">
+                <span onclick="setReply('${
+                  m.id
+                }','${user}')" style="cursor:pointer;color:var(--primary);">
+                  Balas
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+
         const sub = replies.filter((r) => String(r.replyID) === String(m.id));
-        if (sub.length > 0) {
-          html += '<div class="reply-container">';
+        if (sub.length) {
+          html += `<div class="reply-container">`;
           sub.forEach((s) => {
-            html += `<div class="ig-comment"><div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${s.nama.charAt(
-              0
-            )}</div><div class="ig-bubble"><span class="ig-username">${s.nama.toLowerCase()}</span><span class="ig-text">${
-              s.pesan
-            }</span></div></div>`;
+            html += `
+              <div class="ig-comment">
+                <div class="ig-avatar" style="width:25px;height:25px;font-size:.6rem">
+                  ${s.nama.charAt(0)}
+                </div>
+                <div class="ig-bubble">
+                  <span class="ig-username">${s.nama.toLowerCase()}</span>
+                  <span class="ig-text">${s.pesan}</span>
+                  <span class="ig-time">${formatDate(s.waktu)}</span>
+                </div>
+              </div>
+            `;
           });
-          html += "</div>";
+          html += `</div>`;
         }
+
         container.innerHTML += html;
       });
     })
     .catch((err) => {
-      // ignore fetch errors (e.g., CORS) but keep app working
+      console.error("Load comments error:", err);
     });
+}
+
+function showLoading(show) {
+  document.getElementById("loading-overlay")?.classList.toggle("hidden", !show);
+}
+
+function notify(title, message, type = "") {
+  const modal = document.getElementById("notify-modal");
+  const titleEl = document.getElementById("notify-title");
+  const msgEl = document.getElementById("notify-message");
+
+  titleEl.textContent = title;
+  msgEl.textContent = message;
+
+  modal.classList.remove("hidden");
+  modal.classList.remove("notify-error");
+
+  if (type === "error") {
+    modal.classList.add("notify-error");
+  }
+}
+
+function closeNotify() {
+  document.getElementById("notify-modal").classList.add("hidden");
 }
 
 document.addEventListener("DOMContentLoaded", () => {

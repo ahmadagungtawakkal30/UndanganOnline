@@ -21,6 +21,93 @@ body {
   line-height: 1.6;
 }
 
+/* ===============================
+   LOADING OVERLAY
+=============================== */
+.loading {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  color: #fff;
+}
+
+.spinner {
+  width: 45px;
+  height: 45px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #d4bc96;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+/* ===============================
+   NOTIFICATION MODAL
+=============================== */
+.notify {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100001;
+}
+
+/* ===== NOTIFIKASI TIDAK TERDAFTAR ===== */
+.notify-error .notify-box p {
+  color: #000 !important;
+  font-weight: 500;
+}
+
+.notify-error .notify-box h3 {
+  color: #b00020;
+}
+
+.notify-box {
+  background: #fff;
+  color: #222;
+  padding: 28px 22px;
+  border-radius: 18px;
+  width: 90%;
+  max-width: 340px;
+  text-align: center;
+  animation: fadeSlideUp 0.35s ease;
+}
+
+.notify-box h3 {
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.notify-box p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.notify-box button {
+  padding: 10px 26px;
+  border-radius: 50px;
+  border: none;
+  background: linear-gradient(135deg, #8a7051, #d4bc96);
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* helper */
+.hidden {
+  display: none;
+}
+
 /* --- KODE ASLI KAMU (TIDAK ADA YANG DIUBAH) --- */
 @keyframes float {
   0%,
@@ -325,8 +412,7 @@ reply-container .ig-comment {
   margin-bottom: 8px;
 }
 
-* BUBBLE REPLY LEBIH KECIL */
-.reply-container .ig-bubble {
+* BUBBLE REPLY LEBIH KECIL */ .reply-container .ig-bubble {
   max-width: 85%;
   padding: 8px 12px;
   font-size: 0.75rem;
@@ -418,7 +504,7 @@ body.dark-night .flower-frame::after {
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='rgba(212,188,150,0.18)' stroke-width='1'%3E%3Cpath d='M60 15c10 10 10 20 0 30c-10-10-10-20 0-30z'/%3E%3Cpath d='M60 75c10 10 10 20 0 30c-10-10-10-20 0-30z'/%3E%3Cpath d='M15 60c10-10 20-10 30 0c-10 10-20 10-30 0z'/%3E%3Cpath d='M75 60c10-10 20-10 30 0c-10 10-20 10-30 0z'/%3E%3Ccircle cx='60' cy='60' r='6' fill='rgba(212,188,150,0.25)'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: 140px 140px;
+  background-size: 120px 120px;
   opacity: 0.18;
   pointer-events: none;
   z-index: 1;
@@ -615,7 +701,6 @@ body.dark-night .btn-action:hover {
   opacity: 0;
 }
 
-
 /* tombol menu premium */
 .nav-toggle {
   width: 48px;
@@ -636,7 +721,6 @@ body.dark-night .btn-action:hover {
   stroke-width: 2;
 }
 
-
 /* tombol biasa */
 .nav-widget button {
   width: 42px;
@@ -655,18 +739,18 @@ body.dark-night .btn-action:hover {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: rgba(255,255,255,.9);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform .3s ease;
+  transition: transform 0.3s ease;
 }
 
 .nav-toggle:active {
-  transform: scale(.9);
+  transform: scale(0.9);
 }
 
 .menu-icon {
@@ -675,7 +759,7 @@ body.dark-night .btn-action:hover {
   stroke: #555;
   stroke-width: 2;
   stroke-linecap: round;
-  transition: .4s ease;
+  transition: 0.4s ease;
 }
 
 /* SAAT NAV OPEN */
@@ -1059,7 +1143,6 @@ body:not(.dark-night) .ayat-arab {
   }
 }
 
-
 .event-date {
   text-align: center;
   margin-top: 18px;
@@ -1239,8 +1322,109 @@ body.dark-night .ig-credit {
   display: none;
 }
 
+/* ===================================================
+   SAFE FIX PATCH (TIDAK MERUSAK DESAIN)
+=================================================== */
 
+/* ===== FIX TYPO KOMENTAR ===== */
+.reply-container .ig-comment {
+  margin-bottom: 8px;
+}
 
+/* ===== FIX DUPLIKASI USERNAME ===== */
+.ig-username {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
 
+/* ===== NAV WIDGET – FINAL FIX ===== */
+.nav-widget {
+  right: 20px !important;
+  bottom: 90px !important;
+  padding: 10px !important;
+  border-radius: 40px !important;
+}
 
+.nav-widget.closed {
+  transform: translateY(140%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 
+/* tombol nav */
+.nav-widget button {
+  width: 42px;
+  height: 42px;
+  font-size: 1rem;
+}
+
+/* toggle button */
+.nav-toggle {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50%;
+  z-index: 10000;
+}
+
+/* animasi icon */
+.nav-open .menu-icon line:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+.nav-open .menu-icon line:nth-child(2) {
+  opacity: 0;
+}
+.nav-open .menu-icon line:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+/* ===== KOMENTAR SCROLL AMAN ===== */
+#comment-section {
+  overflow-y: auto;
+}
+
+/* ===== SWIPER LOOP WARNING FIX (AMAN) ===== */
+.swiper {
+  overflow: hidden;
+}
+
+/* ===== ANIMASI KOMENTAR BARU ===== */
+.new-comment {
+  animation: popComment 0.5s ease forwards;
+}
+
+@keyframes popComment {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* waktu komentar */
+.ig-time {
+  display: block;
+  font-size: 0.65rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.comment-date {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  font-size: 0.65rem;
+  color: #888;
+  white-space: nowrap;
+}
+
+/* TANGGAL BALASAN */
+.comment-date.small {
+  font-size: 0.6rem;
+  opacity: 0.7;
+}

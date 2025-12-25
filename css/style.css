@@ -580,28 +580,46 @@ body.dark-night .btn-action:hover {
   animation: fadeSlideUp 0.5s ease forwards;
 }
 
-/* ===== FLOATING NAV WIDGET ===== */
 .nav-widget {
   position: fixed;
+  right: 14px;
   bottom: 90px;
-  right: 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  z-index: 998;
+  gap: 8px;
+  z-index: 999;
+  transition: all 0.35s ease;
 }
 
+/* tombol biasa */
 .nav-widget button {
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
   cursor: pointer;
-  font-size: 18px;
-  background: linear-gradient(135deg, #8a7051, #d4bc96);
-  color: #111;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-  transition: 0.3s;
+  font-size: 1rem;
+  backdrop-filter: blur(6px);
+}
+
+/* tombol toggle */
+.nav-toggle {
+  background: var(--primary);
+  font-size: 1.1rem;
+}
+
+/* ===== MODE TERTUTUP ===== */
+.nav-widget.closed button:not(.nav-toggle) {
+  opacity: 0;
+  transform: translateY(10px) scale(0.8);
+  pointer-events: none;
+}
+
+/* animasi */
+.nav-widget button {
+  transition: all 0.3s ease;
 }
 
 .nav-widget button:hover {
@@ -1141,6 +1159,7 @@ body.dark-night .ig-credit {
 .hidden {
   display: none;
 }
+
 
 
 

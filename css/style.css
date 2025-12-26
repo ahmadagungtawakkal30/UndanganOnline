@@ -1356,6 +1356,9 @@ body.dark-night .ig-credit {
 
 /* tombol menu */
 .nav-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -1364,7 +1367,14 @@ body.dark-night .ig-credit {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex !important;
+  }
 }
 
 .nav-toggle svg {

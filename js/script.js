@@ -88,11 +88,11 @@ function nextMusic() {
 
 try {
   var swiper = new Swiper(".mySwiper", {
-    effect: "coverflow",
+    effect: "slide",
     grabCursor: true,
     centeredSlides: true,
     slidesPerView: "auto",
-    loop: true,
+    loop: false,
     speed: 1000,
     coverflowEffect: {
       rotate: 30,
@@ -102,7 +102,7 @@ try {
       slideShadows: true,
     },
     pagination: { el: ".swiper-pagination", clickable: true },
-    autoplay: { delay: 2500, disableOnInteraction: false },
+    autoplay: false,
   });
 } catch (e) {
   // swiper failed to init (library not loaded) - ignore gracefully
@@ -195,7 +195,12 @@ async function bukaUndangan() {
       playBtn.style.animation = "spin 4s linear infinite";
     }
 
-    AOS?.init({ duration: 1200, once: true });
+    AOS.init({
+      duration: 800,
+      once: true,
+      disable: window.innerWidth < 768,
+    });
+
     loadComments?.();
   } catch (err) {
     showLoading(false);

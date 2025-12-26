@@ -421,7 +421,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", resizeSparkle);
     resizeSparkle();
 
-    for (let i = 0; i < 60; i++) {
+    const sparkleCount = window.innerWidth < 768 ? 30 : 60;
+    for (let i = 0; i < sparkleCount; i++) {
       sparks.push({
         x: Math.random() * sw,
         y: Math.random() * sh,
@@ -573,7 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const navWidget = document.getElementById("navWidget");
 const navToggle = document.querySelector(".nav-toggle");
 
-let navOpen = true;
+// let navOpen = true;
 
 // if (window.innerWidth < 600) {
 //   const navWidgetEl = document.getElementById("navWidget");
@@ -581,6 +582,6 @@ let navOpen = true;
 // }
 function toggleNav() {
   const nav = document.getElementById("navWidget");
+  if (!nav) return;
   nav.classList.toggle("closed");
-  nav.classList.toggle("nav-open");
 }

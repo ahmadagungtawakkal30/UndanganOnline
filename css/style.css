@@ -1474,6 +1474,21 @@ body.dark-night .ig-credit {
   opacity: 0.7;
 }
 
+.nav-opened {
+  animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 0.85;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* CONTAINER */
 .nav-container {
   position: fixed;

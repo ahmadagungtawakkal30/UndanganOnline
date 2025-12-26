@@ -575,10 +575,10 @@ const navToggle = document.querySelector(".nav-toggle");
 
 let navOpen = true;
 
-if (window.innerWidth < 600) {
-  const navWidgetEl = document.getElementById("navWidget");
-  if (navWidgetEl) navWidgetEl.classList.add("closed");
-}
+// if (window.innerWidth < 600) {
+//   const navWidgetEl = document.getElementById("navWidget");
+//   if (navWidgetEl) navWidgetEl.classList.add("closed");
+// }
 function toggleNav() {
   const nav = document.getElementById("navWidget");
   nav.classList.toggle("closed");

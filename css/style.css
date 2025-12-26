@@ -617,6 +617,7 @@ body.dark-night .btn-action:hover {
   pointer-events: none;
   z-index: 2;
   opacity: 0.55;
+  pointer-events: none !important;
 }
 /* ===== ANIMASI PESAN TAMU MUNCUL HALUS ===== */
 
@@ -666,7 +667,7 @@ body.dark-night .btn-action:hover {
   animation: fadeSlideUp 0.5s ease forwards;
 }
 
-.nav-widget {
+/* .nav-widget {
   position: fixed;
   right: 14px;
   bottom: 90px;
@@ -675,34 +676,33 @@ body.dark-night .btn-action:hover {
   gap: 8px;
   z-index: 999;
   transition: all 0.35s ease;
-}
+} */
 
 /* ===== NAV WIDGET ===== */
 .nav-widget {
+  opacity: 0.85; /* ⬅️ tingkat transparansi normal */
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 15px;
+  right: 15px;
   background: rgba(20, 20, 20, 0.9);
   backdrop-filter: blur(10px);
-  border-radius: 40px;
-  padding: 10px;
+  border-radius: 25px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   z-index: 9999;
-
-  /* ANIMASI */
   transform: translateY(0);
   transition: transform 0.4s ease, opacity 0.4s ease;
 }
 
-.nav-widget.closed {
+/* .nav-widget.closed {
   transform: translateY(120%);
   opacity: 0;
-}
+} */
 
 /* tombol menu premium */
-.nav-toggle {
+/* .nav-toggle {
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -712,7 +712,7 @@ body.dark-night .btn-action:hover {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
+} */
 
 .menu-icon {
   width: 22px;
@@ -734,32 +734,8 @@ body.dark-night .btn-action:hover {
   backdrop-filter: blur(6px);
 }
 
-.nav-toggle {
-  all: unset;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
 .nav-toggle:active {
   transform: scale(0.9);
-}
-
-.menu-icon {
-  width: 22px;
-  height: 22px;
-  stroke: #555;
-  stroke-width: 2;
-  stroke-linecap: round;
-  transition: 0.4s ease;
 }
 
 /* SAAT NAV OPEN */
@@ -1338,12 +1314,12 @@ body.dark-night .ig-credit {
 }
 
 /* ===== NAV WIDGET – FINAL FIX ===== */
-.nav-widget {
+/* .nav-widget {
   right: 20px !important;
   bottom: 90px !important;
   padding: 10px !important;
   border-radius: 40px !important;
-}
+} */
 
 .nav-widget.closed {
   transform: translateY(140%) !important;
@@ -1359,7 +1335,7 @@ body.dark-night .ig-credit {
 }
 
 /* toggle button */
-.nav-toggle {
+/* .nav-toggle {
   position: fixed !important;
   bottom: 20px !important;
   right: 20px !important;
@@ -1367,6 +1343,66 @@ body.dark-night .ig-credit {
   height: 48px !important;
   border-radius: 50%;
   z-index: 10000;
+} */
+/* .nav-widget {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 99999;
+} */
+
+/* tombol menu */
+.nav-toggle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.nav-toggle svg {
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+/* item menu */
+.nav-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform-origin: bottom;
+  transition: all 0.3s ease;
+}
+
+.nav-items button {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  font-size: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* keadaan tertutup */
+.nav-widget.closed .nav-items {
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+}
+
+/* desktop optional */
+@media (min-width: 768px) {
+  .nav-widget {
+    bottom: 120px;
+  }
 }
 
 /* animasi icon */

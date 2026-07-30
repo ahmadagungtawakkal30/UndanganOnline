@@ -491,7 +491,7 @@ input[readonly] {
   margin-left: 35px;
   margin-top: 6px;
 }
-reply-container .ig-comment {
+.reply-container .ig-comment {
   margin-bottom: 8px;
 }
 
@@ -513,9 +513,11 @@ reply-container .ig-comment {
 
 /* TEXT */
 .ig-text {
+  display: block;
   font-size: 0.8rem;
   line-height: 1.4;
   word-break: break-word;
+  margin-top: 8px;
 }
 
 /* REPLY TEXT LEBIH KECIL */

@@ -409,7 +409,12 @@ input[readonly] {
   margin-bottom: 12px;
 }
 .attendance-status strong {
-  color: #444;
+  color: #1f3a5f;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(31, 58, 95, 0.08);
 }
 .attendance-actions {
   display: grid;
@@ -432,15 +437,15 @@ input[readonly] {
   transform: translateY(-1px);
 }
 .btn-attendance--yes {
-  background: rgba(81, 201, 121, 0.16);
-  color: #206030;
+  background: rgba(81, 201, 121, 0.22);
+  color: #1f6a3d;
 }
 .btn-attendance--no {
-  background: rgba(255, 135, 135, 0.15);
-  color: #b52c2c;
+  background: rgba(255, 135, 135, 0.18);
+  color: #a62b2b;
 }
 .btn-attendance.active {
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 28px rgba(81, 201, 121, 0.18);
 }
 .attendance-hint {
   margin: 0;

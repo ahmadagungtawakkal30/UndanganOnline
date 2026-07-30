@@ -522,7 +522,6 @@ document.addEventListener("DOMContentLoaded", () => {
         e.target.reset();
         if (formNamaEl) formNamaEl.value = tamu;
         cancelReply();
-        setAttendanceStatus();
         if (typeof loadComments === "function") loadComments();
       });
     });

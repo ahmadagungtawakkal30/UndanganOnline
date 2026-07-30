@@ -29,7 +29,7 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbyDi5DVZvR6KM2g_r0oN53wy9_HbAIToInrob1RT2Kdiz5zWP4r3pKPo_FH9YAUp-Oj/exec";
+  "https://script.google.com/macros/s/AKfycbzSwg2DnuFrMcMgNaIPk2D1jBAI6NOCQRXFxaBL2dcig6g46D6r-WWpqNtqQ5VQf8eY/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
 const tamu = decodeURIComponent(urlParams.get("to") || "Tamu Undangan").replace(
@@ -261,13 +261,36 @@ function saveAttendanceStatus(status) {
   if (!nama) return;
   fetch(
     scriptURL +
-      "?action=saveAttendance&name=" +
+      "?action=saveAttendance&nama=" +
       encodeURIComponent(nama) +
       "&kehadiran=" +
       encodeURIComponent(status),
   ).catch(() => {
     // ignore backend errors if action not supported
   });
+}
+
+function loadAttendance() {
+  const name = (tamu || "").toLowerCase().trim();
+  if (!name) return;
+
+  fetch(scriptURL + "?action=getAttendance")
+    .then((res) => res.json())
+    .then((data) => {
+      if (!Array.isArray(data)) return;
+      const current = data
+        .filter(
+          (item) => (item.nama || "").toString().toLowerCase().trim() === name,
+        )
+        .pop();
+
+      if (current && current.kehadiran) {
+        setAttendanceStatus(current.kehadiran);
+      }
+    })
+    .catch(() => {
+      // ignore attendance load errors
+    });
 }
 
 function toggleAttendanceSheet(show) {

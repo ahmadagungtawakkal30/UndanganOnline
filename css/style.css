@@ -465,8 +465,17 @@ input[readonly] {
   color: #b52c2c;
 }
 .ig-text {
+  display: block;
   font-size: 0.85rem;
   color: #333;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.ig-time {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  color: #8e8e8e;
 }
 .ig-meta {
   font-size: 0.7rem;
@@ -511,7 +520,9 @@ reply-container .ig-comment {
 
 /* REPLY TEXT LEBIH KECIL */
 .reply-container .ig-text {
+  display: block;
   font-size: 0.72rem;
+  margin-top: 8px;
 }
 
 #reply-indicator {

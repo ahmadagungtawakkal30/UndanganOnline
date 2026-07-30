@@ -29,7 +29,7 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbxLnYwBE-HjH2a80VLFf4TlKDI5lvrauWf07liga7OdlbxfxGi7LX_zC6zDh7j0qsxW/exec";
+  "https://script.google.com/macros/s/AKfycbzZzOFnNP4Mhn9ZIukpDwlwsz5tc2pLF02USOwyfw7vS22lfZZNhJGw5Z47V35EHImt/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
 const guestDisplayEl = document.getElementById("guest-display");
@@ -149,9 +149,9 @@ function copyToClipboard(elementId) {
 // }
 
 async function bukaUndangan() {
-  const tokenRahesya = new URLSearchParams(window.location.search).get("id");
+  const token = new URLSearchParams(window.location.search).get("id");
 
-  if (!tokenRahesya) {
+  if (!token) {
     notify(
       "Link Tidak Valid",
       "Undangan ini tidak memiliki kode verifikasi akses.",
@@ -164,7 +164,7 @@ async function bukaUndangan() {
 
   try {
     const res = await fetch(
-      scriptURL + "?action=checkGuest&id=" + encodeURIComponent(tokenRahesya),
+      scriptURL + "?action=checkGuest&id=" + encodeURIComponent(token),
     );
     const data = await res.json();
 

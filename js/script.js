@@ -32,13 +32,16 @@ const scriptURL =
   "https://script.google.com/macros/s/AKfycbxLSxWqitV6Mve4CjSmiTenjtK6dnfO0SE_9JArtF7qChd_rK9X2Qqnlic9tyEdie3_/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
+const tokenParam = urlParams.get("id");
 const toParam = urlParams.get("to");
 const guestDisplayEl = document.getElementById("guest-display");
 if (guestDisplayEl) {
-  // Tampilkan nama di cover jika ada parameter ?to=, tapi ini hanya tampilan.
-  guestDisplayEl.innerText = toParam
-    ? decodeURIComponent(toParam).replace(/\+/g, " ")
-    : "Memuat Nama...";
+  // Jika ada token, tampilkan loading dulu; kalau tidak ada token, gunakan ?to= sebagai preview.
+  guestDisplayEl.innerText = tokenParam
+    ? "Memuat Nama..."
+    : toParam
+      ? decodeURIComponent(toParam).replace(/\+/g, " ")
+      : "Memuat Nama...";
 }
 const formNamaEl = document.getElementById("form-nama");
 // Jangan isi `form-nama` dari query string — nama resmi harus datang dari server setelah token valid

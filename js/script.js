@@ -29,15 +29,13 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbxqNg5z1fiUdnWHFvpkxsRlFMQw6aZPNNjXA0L2_mXb5kAlHB22dSAERUIyIY2XfkcL/exec";
+  "https://script.google.com/macros/s/AKfycbxLnYwBE-HjH2a80VLFf4TlKDI5lvrauWf07liga7OdlbxfxGi7LX_zC6zDh7j0qsxW/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
-const toParam = urlParams.get("to");
-const tamu = toParam ? decodeURIComponent(toParam).replace(/\+/g, " ") : "";
 const guestDisplayEl = document.getElementById("guest-display");
-if (guestDisplayEl) guestDisplayEl.innerText = tamu || "Memuat Nama...";
+if (guestDisplayEl) guestDisplayEl.innerText = "Memuat Nama...";
 const formNamaEl = document.getElementById("form-nama");
-if (formNamaEl && tamu) formNamaEl.value = tamu;
+if (formNamaEl) formNamaEl.value = "";
 
 const musicBtn = document.getElementById("music-control");
 const musicIcon = document.getElementById("music-icon");
@@ -151,11 +149,9 @@ function copyToClipboard(elementId) {
 // }
 
 async function bukaUndangan() {
-  const params = new URLSearchParams(window.location.search);
-  const tokenRahesya = params.get("id");
-  const namaTamu = params.get("to");
+  const tokenRahesya = new URLSearchParams(window.location.search).get("id");
 
-  if (!tokenRahesya && !namaTamu) {
+  if (!tokenRahesya) {
     notify(
       "Link Tidak Valid",
       "Undangan ini tidak memiliki kode verifikasi akses.",
@@ -167,11 +163,9 @@ async function bukaUndangan() {
   showLoading(true);
 
   try {
-    const query = tokenRahesya
-      ? "?action=checkGuest&id=" + encodeURIComponent(tokenRahesya)
-      : "?action=checkGuest&name=" + encodeURIComponent(namaTamu || "");
-
-    const res = await fetch(scriptURL + query);
+    const res = await fetch(
+      scriptURL + "?action=checkGuest&id=" + encodeURIComponent(tokenRahesya),
+    );
     const data = await res.json();
 
     showLoading(false);

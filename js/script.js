@@ -249,18 +249,11 @@ function setAttendanceStatus(status) {
   if (yesBtn) yesBtn.classList.toggle("active", storedStatus === "Hadir");
   if (noBtn) noBtn.classList.toggle("active", storedStatus === "Tidak Hadir");
 
-  const attendanceInput = document.getElementById("form-kehadiran");
-  if (attendanceInput) {
-    attendanceInput.value = storedStatus;
-  }
-
-  if (status) {
-    saveAttendanceStatus(status);
-  }
 }
 
 function confirmAttendance(status) {
   setAttendanceStatus(status);
+  saveAttendanceStatus(status);
   toggleAttendanceSheet(false);
 }
 
@@ -271,7 +264,7 @@ function saveAttendanceStatus(status) {
     scriptURL +
       "?action=saveAttendance&name=" +
       encodeURIComponent(nama) +
-      "&status=" +
+      "&kehadiran=" +
       encodeURIComponent(status),
   ).catch(() => {
     // ignore backend errors if action not supported

@@ -432,20 +432,29 @@ input[readonly] {
 .ig-username {
   font-weight: 600;
   font-size: 0.8rem;
-  display: block;
+  display: inline-block;
   color: #262626;
+}
+.ig-comment-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
 }
 .ig-attendance {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  padding: 5px 10px;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 10px;
   border-radius: 999px;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   font-weight: 700;
   background: rgba(0, 0, 0, 0.05);
   color: #222;
+  margin-top: 0;
 }
 .ig-attendance--yes {
   background: rgba(81, 201, 121, 0.16);

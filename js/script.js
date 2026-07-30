@@ -322,8 +322,10 @@ function loadComments() {
           <div class="ig-comment">
             <div class="ig-avatar">${m.nama.charAt(0)}</div>
             <div class="ig-bubble">
-              <span class="ig-username">${user}</span>
-              ${attendanceLabel}
+              <div class="ig-comment-header">
+                <span class="ig-username">${user}</span>
+                ${attendanceLabel}
+              </div>
               <span class="ig-text">${m.pesan}</span>
               <span class="ig-time">${formatDate(m.waktu)}</span>
               <div class="ig-meta">
@@ -341,13 +343,27 @@ function loadComments() {
         if (sub.length) {
           html += `<div class="reply-container">`;
           sub.forEach((s) => {
+            const replyAttendance = (s.kehadiran || "").toString().trim();
+            const replyAttendanceClass =
+              replyAttendance.toLowerCase() === "hadir"
+                ? "ig-attendance--yes"
+                : replyAttendance.toLowerCase() === "tidak hadir"
+                  ? "ig-attendance--no"
+                  : "";
+            const replyAttendanceLabel = replyAttendance
+              ? `<span class="ig-attendance ${replyAttendanceClass}" title="${replyAttendance === "Hadir" ? "Hadir" : replyAttendance === "Tidak Hadir" ? "Berhalangan" : replyAttendance}">${replyAttendance === "Hadir" ? "✅" : replyAttendance === "Tidak Hadir" ? "❌" : ""}</span>`
+              : "";
+
             html += `
               <div class="ig-comment">
                 <div class="ig-avatar" style="width:25px;height:25px;font-size:.6rem">
                   ${s.nama.charAt(0)}
                 </div>
                 <div class="ig-bubble">
-                  <span class="ig-username">${s.nama.toLowerCase()}</span>
+                  <div class="ig-comment-header">
+                    <span class="ig-username">${s.nama.toLowerCase()}</span>
+                    ${replyAttendanceLabel}
+                  </div>
                   <span class="ig-text">${s.pesan}</span>
                   <span class="ig-time">${formatDate(s.waktu)}</span>
                 </div>

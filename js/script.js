@@ -29,7 +29,7 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbzZzOFnNP4Mhn9ZIukpDwlwsz5tc2pLF02USOwyfw7vS22lfZZNhJGw5Z47V35EHImt/exec";
+  "https://script.google.com/macros/s/AKfycbxLSxWqitV6Mve4CjSmiTenjtK6dnfO0SE_9JArtF7qChd_rK9X2Qqnlic9tyEdie3_/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
 const toParam = urlParams.get("to");

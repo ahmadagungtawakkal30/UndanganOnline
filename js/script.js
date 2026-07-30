@@ -32,11 +32,12 @@ const scriptURL =
   "https://script.google.com/macros/s/AKfycbxqNg5z1fiUdnWHFvpkxsRlFMQw6aZPNNjXA0L2_mXb5kAlHB22dSAERUIyIY2XfkcL/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
-const tamu = "Tamu Undangan";
+const toParam = urlParams.get("to");
+const tamu = toParam ? decodeURIComponent(toParam).replace(/\+/g, " ") : "";
 const guestDisplayEl = document.getElementById("guest-display");
-if (guestDisplayEl) guestDisplayEl.innerText = tamu;
+if (guestDisplayEl) guestDisplayEl.innerText = tamu || "Memuat Nama...";
 const formNamaEl = document.getElementById("form-nama");
-if (formNamaEl) formNamaEl.value = tamu;
+if (formNamaEl && tamu) formNamaEl.value = tamu;
 
 const musicBtn = document.getElementById("music-control");
 const musicIcon = document.getElementById("music-icon");
@@ -150,9 +151,11 @@ function copyToClipboard(elementId) {
 // }
 
 async function bukaUndangan() {
-  const tokenRahesya = new URLSearchParams(window.location.search).get("id");
+  const params = new URLSearchParams(window.location.search);
+  const tokenRahesya = params.get("id");
+  const namaTamu = params.get("to");
 
-  if (!tokenRahesya) {
+  if (!tokenRahesya && !namaTamu) {
     notify(
       "Link Tidak Valid",
       "Undangan ini tidak memiliki kode verifikasi akses.",
@@ -164,9 +167,11 @@ async function bukaUndangan() {
   showLoading(true);
 
   try {
-    const res = await fetch(
-      scriptURL + "?action=checkGuest&id=" + encodeURIComponent(tokenRahesya),
-    );
+    const query = tokenRahesya
+      ? "?action=checkGuest&id=" + encodeURIComponent(tokenRahesya)
+      : "?action=checkGuest&name=" + encodeURIComponent(namaTamu || "");
+
+    const res = await fetch(scriptURL + query);
     const data = await res.json();
 
     showLoading(false);

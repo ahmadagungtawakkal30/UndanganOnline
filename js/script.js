@@ -29,12 +29,12 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbwSejCm4FihFoJjsQsYPoPIPUBjmRvcxwlbCPVjarXmGC7Cp-I4jKmQs-uyIrdjHcgj/exec";
+  "https://script.google.com/macros/s/AKfycbyDi5DVZvR6KM2g_r0oN53wy9_HbAIToInrob1RT2Kdiz5zWP4r3pKPo_FH9YAUp-Oj/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
 const tamu = decodeURIComponent(urlParams.get("to") || "Tamu Undangan").replace(
   /\+/g,
-  " "
+  " ",
 );
 const guestDisplayEl = document.getElementById("guest-display");
 if (guestDisplayEl) guestDisplayEl.innerText = tamu;
@@ -159,7 +159,7 @@ async function bukaUndangan() {
     notify(
       "Link Tidak Valid",
       "Undangan ini tidak memiliki nama tamu.",
-      "error"
+      "error",
     );
     return;
   }
@@ -168,7 +168,7 @@ async function bukaUndangan() {
 
   try {
     const res = await fetch(
-      scriptURL + "?action=checkGuest&name=" + encodeURIComponent(nama)
+      scriptURL + "?action=checkGuest&name=" + encodeURIComponent(nama),
     );
 
     const data = await res.json();
@@ -179,7 +179,7 @@ async function bukaUndangan() {
       notify(
         "Undangan Tidak Terdaftar",
         "Maaf, nama Anda tidak ditemukan di daftar tamu.",
-        "error"
+        "error",
       );
       return;
     }
@@ -206,7 +206,7 @@ async function bukaUndangan() {
     showLoading(false);
     notify(
       "Terjadi Kesalahan",
-      "Gagal memverifikasi undangan. Silakan coba lagi."
+      "Gagal memverifikasi undangan. Silakan coba lagi.",
     );
     console.error(err);
   }
@@ -494,7 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // countdown
-  const targetDate = new Date("2025-12-31T08:00:00");
+  const targetDate = new Date("2026-01-30T08:00:00");
   const daysEl = document.getElementById("days");
   const hoursEl = document.getElementById("hours");
   const minutesEl = document.getElementById("minutes");

@@ -129,16 +129,22 @@ function attachRsvpFormHandler() {
 
       const text = await res.text();
       console.debug("saveMessage response:", text);
-      notify("Terkirim", "Pesan doa telah dikirim.");
-      if (submitBtn) {
-        submitBtn.innerText = "Kirim Pesan";
-        submitBtn.disabled = false;
+
+      if (text.toLowerCase().includes("blocked")) {
+        throw new Error("Pesan diblokir oleh filter kata kasar.");
       }
+
+      if (typeof loadComments === "function") {
+        try {
+          await loadComments();
+        } catch (refreshErr) {
+          console.warn("Refresh comments failed:", refreshErr);
+        }
+      }
+
+      notify("Terkirim", "Pesan doa telah dikirim.");
       rsvpForm.reset();
       if (formNamaEl) formNamaEl.value = nama;
-      if (typeof loadComments === "function") {
-        setTimeout(() => loadComments(), 250);
-      }
       cancelReply();
     } catch (err) {
       console.error("Submit pesan error:", err);
@@ -147,6 +153,7 @@ function attachRsvpFormHandler() {
         "Pesan gagal terkirim. Silakan coba lagi.",
         "error",
       );
+    } finally {
       if (submitBtn) {
         submitBtn.innerText = "Kirim Pesan";
         submitBtn.disabled = false;
@@ -557,10 +564,15 @@ function loadComments() {
   container.innerHTML =
     '<p style="text-align:center; color:#999; font-size:.8rem;">Memuat pesan...</p>';
 
-  fetch(`${scriptURL}?action=getMessages&_=${Date.now()}`, {
+  return fetch(`${scriptURL}?action=getMessages&_=${Date.now()}`, {
     cache: "no-store",
   })
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`getMessages returned ${res.status}`);
+      }
+      return res.json();
+    })
     .then((data) => {
       container.innerHTML = "";
 

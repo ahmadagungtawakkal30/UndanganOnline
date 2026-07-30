@@ -84,7 +84,7 @@ if (document.readyState === "loading") {
   attachRsvpFormHandler();
 }
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+async function fetchWithTimeout(url, options = {}, timeoutMs = 7000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -161,14 +161,17 @@ function attachRsvpFormHandler() {
           body: params.toString(),
           cache: "no-store",
         },
-        15000,
+        7000,
       );
 
       if (!res.ok) {
         throw new Error(`Server returned ${res.status}`);
       }
 
-      const text = await res.text();
+      const text = await Promise.race([
+        res.text().catch(() => ""),
+        new Promise((resolve) => setTimeout(() => resolve(""), 600)),
+      ]);
       console.debug("saveMessage response:", text);
 
       if (text.toLowerCase().includes("blocked")) {
@@ -177,9 +180,11 @@ function attachRsvpFormHandler() {
 
       if (typeof loadComments === "function") {
         try {
-          loadComments(8000).catch((refreshErr) => {
-            console.warn("Refresh comments failed:", refreshErr);
-          });
+          setTimeout(() => {
+            loadComments(5000).catch((refreshErr) => {
+              console.warn("Refresh comments failed:", refreshErr);
+            });
+          }, 200);
         } catch (refreshErr) {
           console.warn("Refresh comments failed:", refreshErr);
         }

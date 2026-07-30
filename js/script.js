@@ -62,8 +62,9 @@ async function fetchGuestPreview() {
     console.debug("fetchGuestPreview: data", data);
     showLoading(false);
     if (data && data.valid) {
-      // tampilkan nama dan otomatis buka undangan
-      openInviteUI(data.name);
+      // tampilkan nama sebagai preview saja; jangan otomatis membuka undangan
+      if (guestDisplayEl) guestDisplayEl.innerText = data.name;
+      if (formNamaEl) formNamaEl.value = data.name;
     }
   } catch (e) {
     showLoading(false);
@@ -648,4 +649,25 @@ function toggleNav() {
   const nav = document.getElementById("navWidget");
   if (!nav) return;
   nav.classList.toggle("closed");
+}
+
+function logout() {
+  // hentikan audio jika berjalan
+  try {
+    if (myAudio) {
+      myAudio.pause();
+      myAudio.currentTime = 0;
+    }
+  } catch (e) {}
+
+  // clear storage (local/session)
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch (e) {}
+
+  // redirect ke halaman tanpa query string untuk 'logout'
+  const u = new URL(window.location.href);
+  u.search = "";
+  window.location.href = u.toString();
 }

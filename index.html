@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -323,7 +323,7 @@
           />
           <h2
             style="
-              font-family: 'Great Vibes';
+              font-family: &quot;Great Vibes&quot;;
               font-size: 3.5rem;
               text-align: center;
               color: var(--primary);
@@ -387,7 +387,7 @@
           />
           <h2
             style="
-              font-family: 'Great Vibes';
+              font-family: &quot;Great Vibes&quot;;
               font-size: 3.5rem;
               text-align: center;
               color: var(--primary);
@@ -477,7 +477,7 @@
           />
           <h2
             style="
-              font-family: 'Great Vibes';
+              font-family: &quot;Great Vibes&quot;;
               font-size: 3rem;
               text-align: center;
               color: var(--primary);
@@ -536,7 +536,7 @@
           />
           <h2
             style="
-              font-family: 'Great Vibes';
+              font-family: &quot;Great Vibes&quot;;
               font-size: 3.5rem;
               text-align: center;
               color: var(--primary);
@@ -571,10 +571,24 @@
                   required
                 />
                 <label>KEHADIRAN</label>
-                <select name="kehadiran">
-                  <option value="Hadir">Akan Hadir</option>
-                  <option value="Tidak Hadir">Berhalangan</option>
-                </select>
+                <!-- Perbaikan: tampilan pilihan hadir/tidak hadir dibuat sebagai tombol pill -->
+                <div class="attendance-toggle">
+                  <input
+                    type="radio"
+                    id="attend-yes"
+                    name="kehadiran"
+                    value="Hadir"
+                    checked
+                  />
+                  <label for="attend-yes">Akan Hadir</label>
+                  <input
+                    type="radio"
+                    id="attend-no"
+                    name="kehadiran"
+                    value="Tidak Hadir"
+                  />
+                  <label for="attend-no">Berhalangan</label>
+                </div>
                 <label>PESAN DOA</label>
                 <textarea
                   name="pesan"

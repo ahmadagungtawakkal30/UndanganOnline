@@ -233,6 +233,52 @@ function cancelReply() {
   if (replyIndicator) replyIndicator.style.display = "none";
 }
 
+function setAttendanceStatus(status) {
+  const statusEl = document.getElementById("attendance-status");
+  const yesBtn = document.querySelector(".btn-attendance--yes");
+  const noBtn = document.querySelector(".btn-attendance--no");
+  const storedStatus = status || localStorage.getItem("attendanceStatus") || "";
+
+  if (statusEl) {
+    statusEl.textContent = storedStatus
+      ? storedStatus === "Hadir"
+        ? "✅ Hadir"
+        : "❌ Berhalangan"
+      : "Belum dipilih";
+  }
+  if (yesBtn) yesBtn.classList.toggle("active", storedStatus === "Hadir");
+  if (noBtn) noBtn.classList.toggle("active", storedStatus === "Tidak Hadir");
+
+  if (status) {
+    localStorage.setItem("attendanceStatus", status);
+    saveAttendanceStatus(status);
+  }
+}
+
+function confirmAttendance(status) {
+  setAttendanceStatus(status);
+}
+
+function saveAttendanceStatus(status) {
+  const nama = new URLSearchParams(window.location.search).get("to") || "";
+  if (!nama) return;
+  fetch(
+    scriptURL +
+      "?action=saveAttendance&name=" +
+      encodeURIComponent(nama) +
+      "&status=" +
+      encodeURIComponent(status),
+  ).catch(() => {
+    // ignore backend errors if action not supported
+  });
+}
+
+function toggleAttendanceSheet(show) {
+  const sheet = document.getElementById("attendance-sheet");
+  if (!sheet) return;
+  sheet.classList.toggle("hidden", !show);
+}
+
 // function loadComments() {
 //   const container = document.getElementById("comment-container");
 //   if (!container) return;
@@ -454,51 +500,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // sparkle engine
-  const sparkleCanvas = document.getElementById("goldSparkle");
-  if (sparkleCanvas && sparkleCanvas.getContext) {
-    const sCtx = sparkleCanvas.getContext("2d");
-    let sw,
-      sh,
-      sparks = [];
-    function resizeSparkle() {
-      sw = sparkleCanvas.width = window.innerWidth;
-      sh = sparkleCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeSparkle);
-    resizeSparkle();
-
-    const sparkleCount = window.innerWidth < 768 ? 30 : 60;
-    for (let i = 0; i < sparkleCount; i++) {
-      sparks.push({
-        x: Math.random() * sw,
-        y: Math.random() * sh,
-        r: Math.random() * 1.6 + 0.4,
-        v: Math.random() * 0.35 + 0.15,
-        a: Math.random() * Math.PI * 2,
-      });
-    }
-
-    function drawSparkle() {
-      sCtx.clearRect(0, 0, sw, sh);
-      sparks.forEach((p) => {
-        sCtx.beginPath();
-        sCtx.fillStyle = "rgba(212,188,150,.85)";
-        sCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        sCtx.fill();
-
-        p.y -= p.v;
-        p.x += Math.sin(p.a) * 0.2;
-        p.a += 0.02;
-
-        if (p.y < 0) {
-          p.y = sh;
-          p.x = Math.random() * sw;
-        }
-      });
-      requestAnimationFrame(drawSparkle);
-    }
-    drawSparkle();
+  setAttendanceStatus();
+  if (typeof loadComments === "function") {
+    loadComments();
   }
 
   // smooth scroll

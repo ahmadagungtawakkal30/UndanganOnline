@@ -392,10 +392,140 @@ input[readonly] {
   cursor: not-allowed;
 }
 
+.attendance-panel {
+  background: white;
+  border-radius: 18px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  border: 1px solid #eee;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+.attendance-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+.attendance-status strong {
+  color: #444;
+}
+.attendance-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.btn-attendance {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+.btn-attendance:hover {
+  transform: translateY(-1px);
+}
+.btn-attendance--yes {
+  background: rgba(81, 201, 121, 0.16);
+  color: #206030;
+}
+.btn-attendance--no {
+  background: rgba(255, 135, 135, 0.15);
+  color: #b52c2c;
+}
+.btn-attendance.active {
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+}
+.attendance-hint {
+  margin: 0;
+  color: #666;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 #comment-section {
   max-height: 550px;
   overflow-y: auto;
   padding-right: 5px;
+}
+
+.attendance-summary {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #f1e8d8;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.05);
+}
+.attendance-summary .attendance-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.attendance-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 100020;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+.attendance-sheet.hidden {
+  display: none;
+}
+.attendance-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+.attendance-sheet-card {
+  position: relative;
+  width: min(520px, calc(100% - 32px));
+  margin: 0 16px 20px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+}
+.attendance-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.attendance-sheet-header h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+.sheet-close {
+  border: none;
+  background: transparent;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #444;
+}
+.sheet-done {
+  width: 100%;
+  margin-top: 14px;
+}
+.attendance-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 /* ===== KOMENTAR UTAMA ===== */

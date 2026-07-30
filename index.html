@@ -560,6 +560,23 @@
                   >Batal</span
                 >
               </div>
+              <div class="attendance-summary">
+                <div class="attendance-status">
+                  <span>Status Kehadiran:</span>
+                  <strong id="attendance-status">Belum dipilih</strong>
+                </div>
+                <button
+                  type="button"
+                  class="btn-open"
+                  onclick="toggleAttendanceSheet(true)"
+                >
+                  Konfirmasi Kehadiran
+                </button>
+                <p class="attendance-hint">
+                  Kamu bisa mengubah status kehadiran kapan saja tanpa mengulang
+                  komentar.
+                </p>
+              </div>
               <form id="rsvp-form">
                 <input type="hidden" name="replyID" id="form-replyID" />
                 <label>NAMA</label>
@@ -570,25 +587,6 @@
                   readonly
                   required
                 />
-                <label>KEHADIRAN</label>
-                <!-- Perbaikan: tampilan pilihan hadir/tidak hadir dibuat sebagai tombol pill -->
-                <div class="attendance-toggle">
-                  <input
-                    type="radio"
-                    id="attend-yes"
-                    name="kehadiran"
-                    value="Hadir"
-                    checked
-                  />
-                  <label for="attend-yes">Akan Hadir</label>
-                  <input
-                    type="radio"
-                    id="attend-no"
-                    name="kehadiran"
-                    value="Tidak Hadir"
-                  />
-                  <label for="attend-no">Berhalangan</label>
-                </div>
                 <label>PESAN DOA</label>
                 <textarea
                   name="pesan"
@@ -660,6 +658,50 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script src="js/script.js"></script>
+
+    <div id="attendance-sheet" class="attendance-sheet hidden">
+      <div
+        class="attendance-sheet-backdrop"
+        onclick="toggleAttendanceSheet(false)"
+      ></div>
+      <div class="attendance-panel attendance-sheet-card">
+        <div class="attendance-sheet-header">
+          <h3>Konfirmasi Kehadiran</h3>
+          <button
+            type="button"
+            class="sheet-close"
+            onclick="toggleAttendanceSheet(false)"
+          >
+            ×
+          </button>
+        </div>
+        <p>Pilih status kehadiran Anda.</p>
+        <div class="attendance-actions">
+          <button
+            type="button"
+            class="btn-attendance btn-attendance--yes"
+            onclick="confirmAttendance('Hadir')"
+          >
+            ✅ Hadir
+          </button>
+          <button
+            type="button"
+            class="btn-attendance btn-attendance--no"
+            onclick="confirmAttendance('Tidak Hadir')"
+          >
+            ❌ Berhalangan
+          </button>
+        </div>
+        <button
+          type="button"
+          class="btn-open sheet-done"
+          onclick="toggleAttendanceSheet(false)"
+        >
+          Selesai
+        </button>
+      </div>
+    </div>
+
     <!-- LOADING -->
     <div id="loading-overlay" class="loading hidden">
       <div class="spinner"></div>

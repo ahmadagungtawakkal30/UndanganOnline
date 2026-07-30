@@ -481,9 +481,14 @@ input[readonly] {
 }
 .attendance-hint {
   margin: 0;
-  color: #666;
-  font-size: 0.82rem;
-  line-height: 1.5;
+  color: #3f4a5a;
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.attendance-status span,
+.attendance-status strong {
+  color: #11263b;
 }
 
 #comment-section {

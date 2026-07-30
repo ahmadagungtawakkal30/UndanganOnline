@@ -308,14 +308,20 @@ function loadComments() {
       mains.reverse().forEach((m) => {
         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
         const attendance = (m.kehadiran || "").toString().trim();
+        const normalized = attendance.toLowerCase();
         const attendanceClass =
-          attendance.toLowerCase() === "hadir"
+          normalized.includes("hadir") && !normalized.includes("tidak")
             ? "ig-attendance--yes"
-            : attendance.toLowerCase() === "tidak hadir"
+            : normalized.includes("tidak") || normalized.includes("berhalangan")
               ? "ig-attendance--no"
               : "";
-        const attendanceLabel = attendance
-          ? `<span class="ig-attendance ${attendanceClass}" title="${attendance === "Hadir" ? "Hadir" : attendance === "Tidak Hadir" ? "Berhalangan" : attendance}">${attendance === "Hadir" ? "✅" : attendance === "Tidak Hadir" ? "❌" : ""}</span>`
+        const attendanceIcon = normalized.includes("hadir") && !normalized.includes("tidak")
+          ? "✅"
+          : normalized.includes("tidak") || normalized.includes("berhalangan")
+            ? "❌"
+            : "";
+        const attendanceLabel = attendanceIcon
+          ? `<span class="ig-attendance ${attendanceClass}" title="${attendance}">${attendanceIcon}</span>`
           : "";
 
         let html = `
@@ -344,14 +350,21 @@ function loadComments() {
           html += `<div class="reply-container">`;
           sub.forEach((s) => {
             const replyAttendance = (s.kehadiran || "").toString().trim();
+            const replyNormalized = replyAttendance.toLowerCase();
             const replyAttendanceClass =
-              replyAttendance.toLowerCase() === "hadir"
+              (replyNormalized.includes("hadir") && !replyNormalized.includes("tidak"))
                 ? "ig-attendance--yes"
-                : replyAttendance.toLowerCase() === "tidak hadir"
+                : (replyNormalized.includes("tidak") || replyNormalized.includes("berhalangan"))
                   ? "ig-attendance--no"
                   : "";
-            const replyAttendanceLabel = replyAttendance
-              ? `<span class="ig-attendance ${replyAttendanceClass}" title="${replyAttendance === "Hadir" ? "Hadir" : replyAttendance === "Tidak Hadir" ? "Berhalangan" : replyAttendance}">${replyAttendance === "Hadir" ? "✅" : replyAttendance === "Tidak Hadir" ? "❌" : ""}</span>`
+            const replyAttendanceIcon =
+              replyNormalized.includes("✅") || (replyNormalized.includes("hadir") && !replyNormalized.includes("tidak"))
+                ? "✅"
+                : replyNormalized.includes("❌") || replyNormalized.includes("tidak") || replyNormalized.includes("berhalangan")
+                  ? "❌"
+                  : "";
+            const replyAttendanceLabel = replyAttendanceIcon
+              ? `<span class="ig-attendance ${replyAttendanceClass}" title="${replyAttendance}">${replyAttendanceIcon}</span>`
               : "";
 
             html += `

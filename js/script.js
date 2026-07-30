@@ -29,13 +29,10 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbzKIEIOXzBZ8jjw88DkAisG2clKJxSuo5aTh_UaNMbaoQN1LSb7GX2_5NcAWcylXrqW/exec";
+  "https://script.google.com/macros/s/AKfycbxqNg5z1fiUdnWHFvpkxsRlFMQw6aZPNNjXA0L2_mXb5kAlHB22dSAERUIyIY2XfkcL/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
-const tamu = decodeURIComponent(urlParams.get("to") || "Tamu Undangan").replace(
-  /\+/g,
-  " ",
-);
+const tamu = "Tamu Undangan";
 const guestDisplayEl = document.getElementById("guest-display");
 if (guestDisplayEl) guestDisplayEl.innerText = tamu;
 const formNamaEl = document.getElementById("form-nama");
@@ -153,12 +150,12 @@ function copyToClipboard(elementId) {
 // }
 
 async function bukaUndangan() {
-  const nama = new URLSearchParams(window.location.search).get("to");
+  const tokenRahesya = new URLSearchParams(window.location.search).get("id");
 
-  if (!nama) {
+  if (!tokenRahesya) {
     notify(
       "Link Tidak Valid",
-      "Undangan ini tidak memiliki nama tamu.",
+      "Undangan ini tidak memiliki kode verifikasi akses.",
       "error",
     );
     return;
@@ -168,9 +165,8 @@ async function bukaUndangan() {
 
   try {
     const res = await fetch(
-      scriptURL + "?action=checkGuest&name=" + encodeURIComponent(nama),
+      scriptURL + "?action=checkGuest&id=" + encodeURIComponent(tokenRahesya),
     );
-
     const data = await res.json();
 
     showLoading(false);
@@ -178,13 +174,18 @@ async function bukaUndangan() {
     if (!data.valid) {
       notify(
         "Undangan Tidak Terdaftar",
-        "Maaf, nama Anda tidak ditemukan di daftar tamu.",
+        "Maaf, kode undangan Anda tidak valid atau salah.",
         "error",
       );
       return;
     }
 
-    // ===== BUKA UNDANGAN =====
+    const namaAsliTamu = data.name;
+
+    if (guestDisplayEl) guestDisplayEl.innerText = namaAsliTamu;
+    if (formNamaEl) formNamaEl.value = namaAsliTamu;
+
+    // ===== BUKA LAYAR UNDANGAN =====
     document.getElementById("cover")?.classList.add("hide");
     document.getElementById("main-content")?.classList.add("show");
     document.body.style.overflow = "auto";
@@ -195,18 +196,14 @@ async function bukaUndangan() {
       playBtn.style.animation = "spin 4s linear infinite";
     }
 
-    AOS.init({
-      duration: 800,
-      once: true,
-      disable: window.innerWidth < 768,
-    });
-
+    AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
     loadComments?.();
+    if (typeof loadAttendance === "function") loadAttendance();
   } catch (err) {
     showLoading(false);
     notify(
       "Terjadi Kesalahan",
-      "Gagal memverifikasi undangan. Silakan coba lagi.",
+      "Gagal memverifikasi akun undangan. Silakan coba lagi.",
     );
     console.error(err);
   }

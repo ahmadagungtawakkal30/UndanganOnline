@@ -237,7 +237,7 @@ function setAttendanceStatus(status) {
   const statusEl = document.getElementById("attendance-status");
   const yesBtn = document.querySelector(".btn-attendance--yes");
   const noBtn = document.querySelector(".btn-attendance--no");
-  const storedStatus = status || localStorage.getItem("attendanceStatus") || "";
+  const storedStatus = status || "";
 
   if (statusEl) {
     statusEl.textContent = storedStatus
@@ -255,13 +255,13 @@ function setAttendanceStatus(status) {
   }
 
   if (status) {
-    localStorage.setItem("attendanceStatus", status);
     saveAttendanceStatus(status);
   }
 }
 
 function confirmAttendance(status) {
   setAttendanceStatus(status);
+  toggleAttendanceSheet(false);
 }
 
 function saveAttendanceStatus(status) {

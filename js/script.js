@@ -29,7 +29,7 @@ try {
 }
 
 const scriptURL =
-  "https://script.google.com/macros/s/AKfycbzSwg2DnuFrMcMgNaIPk2D1jBAI6NOCQRXFxaBL2dcig6g46D6r-WWpqNtqQ5VQf8eY/exec";
+  "https://script.google.com/macros/s/AKfycbzKIEIOXzBZ8jjw88DkAisG2clKJxSuo5aTh_UaNMbaoQN1LSb7GX2_5NcAWcylXrqW/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
 const tamu = decodeURIComponent(urlParams.get("to") || "Tamu Undangan").replace(
@@ -528,6 +528,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setAttendanceStatus();
+  loadAttendance();
   if (typeof loadComments === "function") {
     loadComments();
   }

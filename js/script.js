@@ -50,18 +50,20 @@ async function fetchGuestPreview() {
     const token = urlParams.get("id");
     console.debug("fetchGuestPreview: token=", token);
     if (!token) return;
+    showLoading(true);
     const res = await fetch(
       scriptURL + "?action=checkGuest&id=" + encodeURIComponent(token),
     );
     console.debug("fetchGuestPreview: response status", res.status);
     const data = await res.json();
     console.debug("fetchGuestPreview: data", data);
+    showLoading(false);
     if (data && data.valid) {
-      if (guestDisplayEl) guestDisplayEl.innerText = data.name;
-      // jangan otomatis membuka undangan, hanya isi form nama sebagai preview
-      if (formNamaEl) formNamaEl.value = data.name;
+      // tampilkan nama dan otomatis buka undangan
+      openInviteUI(data.name);
     }
   } catch (e) {
+    showLoading(false);
     console.error("Guest preview failed:", e);
   }
 }
@@ -185,8 +187,9 @@ function copyToClipboard(elementId) {
 
 async function bukaUndangan() {
   const token = new URLSearchParams(window.location.search).get("id");
+  const nameParam = new URLSearchParams(window.location.search).get("to");
 
-  if (!token) {
+  if (!token && !nameParam) {
     notify(
       "Link Tidak Valid",
       "Undangan ini tidak memiliki kode verifikasi akses.",
@@ -198,9 +201,11 @@ async function bukaUndangan() {
   showLoading(true);
 
   try {
-    const res = await fetch(
-      scriptURL + "?action=checkGuest&id=" + encodeURIComponent(token),
-    );
+    const query = token
+      ? `?action=checkGuest&id=${encodeURIComponent(token)}`
+      : `?action=checkGuest&name=${encodeURIComponent(nameParam)}`;
+
+    const res = await fetch(scriptURL + query);
     const data = await res.json();
 
     showLoading(false);
@@ -208,31 +213,13 @@ async function bukaUndangan() {
     if (!data.valid) {
       notify(
         "Undangan Tidak Terdaftar",
-        "Maaf, kode undangan Anda tidak valid atau salah.",
+        "Maaf, data undangan Anda tidak valid.",
         "error",
       );
       return;
     }
 
-    const namaAsliTamu = data.name;
-
-    if (guestDisplayEl) guestDisplayEl.innerText = namaAsliTamu;
-    if (formNamaEl) formNamaEl.value = namaAsliTamu;
-
-    // ===== BUKA LAYAR UNDANGAN =====
-    document.getElementById("cover")?.classList.add("hide");
-    document.getElementById("main-content")?.classList.add("show");
-    document.body.style.overflow = "auto";
-
-    if (myAudio) {
-      myAudio.play().catch(() => {});
-      musicBtn.style.display = "flex";
-      playBtn.style.animation = "spin 4s linear infinite";
-    }
-
-    AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
-    loadComments?.();
-    if (typeof loadAttendance === "function") loadAttendance();
+    openInviteUI(data.name);
   } catch (err) {
     showLoading(false);
     notify(
@@ -241,6 +228,26 @@ async function bukaUndangan() {
     );
     console.error(err);
   }
+}
+
+function openInviteUI(namaAsliTamu) {
+  if (guestDisplayEl) guestDisplayEl.innerText = namaAsliTamu;
+  if (formNamaEl) formNamaEl.value = namaAsliTamu;
+
+  // ===== BUKA LAYAR UNDANGAN =====
+  document.getElementById("cover")?.classList.add("hide");
+  document.getElementById("main-content")?.classList.add("show");
+  document.body.style.overflow = "auto";
+
+  if (myAudio) {
+    myAudio.play().catch(() => {});
+    musicBtn.style.display = "flex";
+    playBtn.style.animation = "spin 4s linear infinite";
+  }
+
+  AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
+  loadComments?.();
+  if (typeof loadAttendance === "function") loadAttendance();
 }
 
 function setReply(id, name) {

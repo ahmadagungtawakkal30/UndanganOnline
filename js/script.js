@@ -494,7 +494,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // countdown
-  const targetDate = new Date("2027-01-30T08:00:00");
+  const targetDate = new Date("2027-01-01T08:00:00");
   const daysEl = document.getElementById("days");
   const hoursEl = document.getElementById("hours");
   const minutesEl = document.getElementById("minutes");

@@ -435,6 +435,26 @@ input[readonly] {
   display: block;
   color: #262626;
 }
+.ig-attendance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.05);
+  color: #222;
+}
+.ig-attendance--yes {
+  background: rgba(81, 201, 121, 0.16);
+  color: #206030;
+}
+.ig-attendance--no {
+  background: rgba(255, 135, 135, 0.15);
+  color: #b52c2c;
+}
 .ig-text {
   font-size: 0.85rem;
   color: #333;

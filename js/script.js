@@ -84,6 +84,25 @@ if (document.readyState === "loading") {
   attachRsvpFormHandler();
 }
 
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function setSubmitButtonState(isSubmitting) {
+  const submitBtn = document.getElementById("submit-btn");
+  if (!submitBtn) return;
+
+  submitBtn.disabled = isSubmitting;
+  submitBtn.textContent = isSubmitting ? "Mengirim..." : "Kirim Pesan";
+}
+
 function attachRsvpFormHandler() {
   const rsvpForm = document.getElementById("rsvp-form");
   if (!rsvpForm) return;
@@ -101,11 +120,7 @@ function attachRsvpFormHandler() {
       return;
     }
 
-    const submitBtn = document.getElementById("submit-btn");
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Mengirim...";
-    }
+    setSubmitButtonState(true);
 
     const params = new URLSearchParams();
     params.append("action", "saveMessage");
@@ -114,14 +129,18 @@ function attachRsvpFormHandler() {
     params.append("replyID", replyID);
 
     try {
-      const res = await fetch(scriptURL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      const res = await fetchWithTimeout(
+        scriptURL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+          body: params.toString(),
+          cache: "no-store",
         },
-        body: params.toString(),
-        cache: "no-store",
-      });
+        15000,
+      );
 
       if (!res.ok) {
         throw new Error(`Server returned ${res.status}`);
@@ -136,7 +155,9 @@ function attachRsvpFormHandler() {
 
       if (typeof loadComments === "function") {
         try {
-          await loadComments();
+          loadComments(8000).catch((refreshErr) => {
+            console.warn("Refresh comments failed:", refreshErr);
+          });
         } catch (refreshErr) {
           console.warn("Refresh comments failed:", refreshErr);
         }
@@ -154,10 +175,7 @@ function attachRsvpFormHandler() {
         "error",
       );
     } finally {
-      if (submitBtn) {
-        submitBtn.innerText = "Kirim Pesan";
-        submitBtn.disabled = false;
-      }
+      setSubmitButtonState(false);
     }
   });
 }
@@ -557,16 +575,20 @@ function formatDate(dateString) {
   });
 }
 
-function loadComments() {
+function loadComments(timeoutMs = 8000) {
   const container = document.getElementById("comment-container");
-  if (!container) return;
+  if (!container) return Promise.resolve();
 
   container.innerHTML =
     '<p style="text-align:center; color:#999; font-size:.8rem;">Memuat pesan...</p>';
 
-  return fetch(`${scriptURL}?action=getMessages&_=${Date.now()}`, {
-    cache: "no-store",
-  })
+  return fetchWithTimeout(
+    `${scriptURL}?action=getMessages&_=${Date.now()}`,
+    {
+      cache: "no-store",
+    },
+    timeoutMs,
+  )
     .then((res) => {
       if (!res.ok) {
         throw new Error(`getMessages returned ${res.status}`);

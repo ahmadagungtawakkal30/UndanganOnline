@@ -434,10 +434,12 @@ input[readonly] {
 }
 .attendance-note {
   margin: 0;
-  color: #b9730c;
+  color: #b9730c; /* Warna utama tetap emas/oranye */
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.6;
+  /* Menambahkan garis luar hitam pekat sebesar 1 pixel */
+  -webkit-text-stroke: 1px #000000;
 }
 
 .attendance-hint {

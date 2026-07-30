@@ -114,10 +114,21 @@ function attachRsvpFormHandler() {
     params.append("replyID", replyID);
 
     try {
-      await fetch(scriptURL + "?" + params.toString(), {
+      const res = await fetch(scriptURL, {
         method: "POST",
-        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        },
+        body: params.toString(),
+        cache: "no-store",
       });
+
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}`);
+      }
+
+      const text = await res.text();
+      console.debug("saveMessage response:", text);
       notify("Terkirim", "Pesan doa telah dikirim.");
       if (submitBtn) {
         submitBtn.innerText = "Kirim Pesan";
@@ -125,7 +136,9 @@ function attachRsvpFormHandler() {
       }
       rsvpForm.reset();
       if (formNamaEl) formNamaEl.value = nama;
-      if (typeof loadComments === "function") loadComments();
+      if (typeof loadComments === "function") {
+        setTimeout(() => loadComments(), 250);
+      }
       cancelReply();
     } catch (err) {
       console.error("Submit pesan error:", err);
@@ -544,7 +557,9 @@ function loadComments() {
   container.innerHTML =
     '<p style="text-align:center; color:#999; font-size:.8rem;">Memuat pesan...</p>';
 
-  fetch(scriptURL + "?action=getMessages")
+  fetch(`${scriptURL}?action=getMessages&_=${Date.now()}`, {
+    cache: "no-store",
+  })
     .then((res) => res.json())
     .then((data) => {
       container.innerHTML = "";

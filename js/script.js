@@ -315,11 +315,12 @@ function loadComments() {
             : normalized.includes("tidak") || normalized.includes("berhalangan")
               ? "ig-attendance--no"
               : "";
-        const attendanceIcon = normalized.includes("hadir") && !normalized.includes("tidak")
-          ? "✅"
-          : normalized.includes("tidak") || normalized.includes("berhalangan")
-            ? "❌"
-            : "";
+        const attendanceIcon =
+          normalized.includes("hadir") && !normalized.includes("tidak")
+            ? "✅"
+            : normalized.includes("tidak") || normalized.includes("berhalangan")
+              ? "❌"
+              : "";
         const attendanceLabel = attendanceIcon
           ? `<span class="ig-attendance ${attendanceClass}" title="${attendance}">${attendanceIcon}</span>`
           : "";
@@ -352,15 +353,21 @@ function loadComments() {
             const replyAttendance = (s.kehadiran || "").toString().trim();
             const replyNormalized = replyAttendance.toLowerCase();
             const replyAttendanceClass =
-              (replyNormalized.includes("hadir") && !replyNormalized.includes("tidak"))
+              replyNormalized.includes("hadir") &&
+              !replyNormalized.includes("tidak")
                 ? "ig-attendance--yes"
-                : (replyNormalized.includes("tidak") || replyNormalized.includes("berhalangan"))
+                : replyNormalized.includes("tidak") ||
+                    replyNormalized.includes("berhalangan")
                   ? "ig-attendance--no"
                   : "";
             const replyAttendanceIcon =
-              replyNormalized.includes("✅") || (replyNormalized.includes("hadir") && !replyNormalized.includes("tidak"))
+              replyNormalized.includes("✅") ||
+              (replyNormalized.includes("hadir") &&
+                !replyNormalized.includes("tidak"))
                 ? "✅"
-                : replyNormalized.includes("❌") || replyNormalized.includes("tidak") || replyNormalized.includes("berhalangan")
+                : replyNormalized.includes("❌") ||
+                    replyNormalized.includes("tidak") ||
+                    replyNormalized.includes("berhalangan")
                   ? "❌"
                   : "";
             const replyAttendanceLabel = replyAttendanceIcon

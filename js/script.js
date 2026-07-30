@@ -45,25 +45,32 @@ const formNamaEl = document.getElementById("form-nama");
 
 // Jika ada token di URL saat halaman dimuat, ambil nama tamu segera dan tampilkan sebagai preview di cover.
 async function fetchGuestPreview() {
+  console.debug("fetchGuestPreview: start");
   try {
     const token = urlParams.get("id");
+    console.debug("fetchGuestPreview: token=", token);
     if (!token) return;
     const res = await fetch(
       scriptURL + "?action=checkGuest&id=" + encodeURIComponent(token),
     );
+    console.debug("fetchGuestPreview: response status", res.status);
     const data = await res.json();
+    console.debug("fetchGuestPreview: data", data);
     if (data && data.valid) {
       if (guestDisplayEl) guestDisplayEl.innerText = data.name;
       // jangan otomatis membuka undangan, hanya isi form nama sebagai preview
       if (formNamaEl) formNamaEl.value = data.name;
     }
   } catch (e) {
-    // ignore preview failures (CORS or network)
-    console.debug("Guest preview failed:", e);
+    console.error("Guest preview failed:", e);
   }
 }
 
-fetchGuestPreview();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", fetchGuestPreview);
+} else {
+  fetchGuestPreview();
+}
 
 const musicBtn = document.getElementById("music-control");
 const musicIcon = document.getElementById("music-icon");

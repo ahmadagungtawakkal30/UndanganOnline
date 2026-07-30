@@ -438,8 +438,6 @@ input[readonly] {
   font-size: 0.82rem;
   font-weight: 600;
   line-height: 1.6;
-  /* Menambahkan garis luar hitam pekat sebesar 1 pixel */
-  -webkit-text-stroke: 1px #b9730c;
 }
 
 .attendance-hint {

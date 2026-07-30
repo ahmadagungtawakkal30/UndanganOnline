@@ -308,7 +308,12 @@ function loadComments() {
       mains.reverse().forEach((m) => {
         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
         const attendance = (m.kehadiran || "").toString().trim();
-        const attendanceClass = attendance.toLowerCase() === "hadir" ? "ig-attendance--yes" : attendance.toLowerCase() === "tidak hadir" ? "ig-attendance--no" : "";
+        const attendanceClass =
+          attendance.toLowerCase() === "hadir"
+            ? "ig-attendance--yes"
+            : attendance.toLowerCase() === "tidak hadir"
+              ? "ig-attendance--no"
+              : "";
         const attendanceLabel = attendance
           ? `<span class="ig-attendance ${attendanceClass}">${attendance === "Hadir" ? "✅ Hadir" : attendance === "Tidak Hadir" ? "❌ Berhalangan" : attendance}</span>`
           : "";

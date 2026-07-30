@@ -249,6 +249,11 @@ function setAttendanceStatus(status) {
   if (yesBtn) yesBtn.classList.toggle("active", storedStatus === "Hadir");
   if (noBtn) noBtn.classList.toggle("active", storedStatus === "Tidak Hadir");
 
+  const attendanceInput = document.getElementById("form-kehadiran");
+  if (attendanceInput) {
+    attendanceInput.value = storedStatus;
+  }
+
   if (status) {
     localStorage.setItem("attendanceStatus", status);
     saveAttendanceStatus(status);
@@ -493,6 +498,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.target.reset();
         if (formNamaEl) formNamaEl.value = tamu;
         cancelReply();
+        setAttendanceStatus();
         setTimeout(() => {
           if (typeof loadComments === "function") loadComments();
         }, 2000);

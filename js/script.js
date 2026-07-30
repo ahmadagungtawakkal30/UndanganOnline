@@ -75,9 +75,71 @@ async function fetchGuestPreview() {
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", fetchGuestPreview);
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchGuestPreview();
+    attachRsvpFormHandler();
+  });
 } else {
   fetchGuestPreview();
+  attachRsvpFormHandler();
+}
+
+function attachRsvpFormHandler() {
+  const rsvpForm = document.getElementById("rsvp-form");
+  if (!rsvpForm) return;
+
+  rsvpForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(rsvpForm);
+    const nama = formData.get("nama")?.toString().trim() || "";
+    const pesan = formData.get("pesan")?.toString().trim() || "";
+    const replyID = formData.get("replyID")?.toString().trim() || "";
+
+    if (!nama || !pesan) {
+      notify("Isi Data", "Nama dan pesan doa harus diisi.", "error");
+      return;
+    }
+
+    const submitBtn = document.getElementById("submit-btn");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Mengirim...";
+    }
+
+    const params = new URLSearchParams();
+    params.append("action", "saveMessage");
+    params.append("nama", nama);
+    params.append("pesan", pesan);
+    params.append("replyID", replyID);
+
+    try {
+      await fetch(scriptURL + "?" + params.toString(), {
+        method: "POST",
+        mode: "no-cors",
+      });
+      notify("Terkirim", "Pesan doa telah dikirim.");
+      if (submitBtn) {
+        submitBtn.innerText = "Kirim Pesan";
+        submitBtn.disabled = false;
+      }
+      rsvpForm.reset();
+      if (formNamaEl) formNamaEl.value = nama;
+      if (typeof loadComments === "function") loadComments();
+      cancelReply();
+    } catch (err) {
+      console.error("Submit pesan error:", err);
+      notify(
+        "Gagal Mengirim",
+        "Pesan gagal terkirim. Silakan coba lagi.",
+        "error",
+      );
+      if (submitBtn) {
+        submitBtn.innerText = "Kirim Pesan";
+        submitBtn.disabled = false;
+      }
+    }
+  });
 }
 
 const musicBtn = document.getElementById("music-control");

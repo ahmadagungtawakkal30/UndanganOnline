@@ -852,7 +852,7 @@ function renderPesanDoa(dataDoa) {
 }
 
 // Contoh pemanggilan data
-const dummyData = [as
+const dummyData = [
   { nama: "Budi Santoso", status: "hadir", pesan: "Selamat ya!" },
   { nama: "Siti Rahma", status: "tentatif", pesan: "Insya Allah hadir." },
   { nama: "Ahmad", status: "berhalangan", pesan: "Maaf belum bisa hadir." },

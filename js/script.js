@@ -248,7 +248,6 @@ function setAttendanceStatus(status) {
   }
   if (yesBtn) yesBtn.classList.toggle("active", storedStatus === "Hadir");
   if (noBtn) noBtn.classList.toggle("active", storedStatus === "Tidak Hadir");
-
 }
 
 function confirmAttendance(status) {

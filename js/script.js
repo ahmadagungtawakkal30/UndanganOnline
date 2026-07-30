@@ -257,17 +257,19 @@ function confirmAttendance(status) {
 }
 
 function saveAttendanceStatus(status) {
-  const nama = new URLSearchParams(window.location.search).get("to") || "";
+  const nama =
+    formNamaEl?.value ||
+    new URLSearchParams(window.location.search).get("to") ||
+    "";
   if (!nama) return;
 
-  const formData = new FormData();
-  formData.append("action", "saveAttendance");
-  formData.append("nama", nama);
-  formData.append("kehadiran", status);
+  const params = new URLSearchParams();
+  params.append("action", "saveAttendance");
+  params.append("nama", nama);
+  params.append("kehadiran", status);
 
-  fetch(scriptURL, {
+  fetch(scriptURL + "?" + params.toString(), {
     method: "POST",
-    body: formData,
     mode: "no-cors",
   }).catch(() => {
     // ignore backend errors if action not supported

@@ -95,12 +95,31 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
   }
 }
 
-function setSubmitButtonState(isSubmitting) {
+let submitResetTimer = null;
+
+function clearSubmitResetTimer() {
+  if (submitResetTimer) {
+    clearTimeout(submitResetTimer);
+    submitResetTimer = null;
+  }
+}
+
+function setSubmitButtonState(isSubmitting, isSuccess = false) {
   const submitBtn = document.getElementById("submit-btn");
   if (!submitBtn) return;
 
-  submitBtn.disabled = isSubmitting;
-  submitBtn.textContent = isSubmitting ? "Mengirim..." : "Kirim Pesan";
+  submitBtn.disabled = isSubmitting || isSuccess;
+
+  if (isSubmitting) {
+    submitBtn.textContent = "Mengirim...";
+    submitBtn.style.opacity = "0.85";
+  } else if (isSuccess) {
+    submitBtn.textContent = "Terkirim ✓";
+    submitBtn.style.opacity = "1";
+  } else {
+    submitBtn.textContent = "Kirim Pesan";
+    submitBtn.style.opacity = "1";
+  }
 }
 
 function attachRsvpFormHandler() {
@@ -120,6 +139,7 @@ function attachRsvpFormHandler() {
       return;
     }
 
+    clearSubmitResetTimer();
     setSubmitButtonState(true);
 
     const params = new URLSearchParams();
@@ -127,6 +147,8 @@ function attachRsvpFormHandler() {
     params.append("nama", nama);
     params.append("pesan", pesan);
     params.append("replyID", replyID);
+
+    let showSuccessState = false;
 
     try {
       const res = await fetchWithTimeout(
@@ -164,6 +186,12 @@ function attachRsvpFormHandler() {
       }
 
       notify("Terkirim", "Pesan doa telah dikirim.");
+      showSuccessState = true;
+      setSubmitButtonState(false, true);
+      clearSubmitResetTimer();
+      submitResetTimer = window.setTimeout(() => {
+        setSubmitButtonState(false, false);
+      }, 1600);
       rsvpForm.reset();
       if (formNamaEl) formNamaEl.value = nama;
       cancelReply();
@@ -175,7 +203,9 @@ function attachRsvpFormHandler() {
         "error",
       );
     } finally {
-      setSubmitButtonState(false);
+      if (!showSuccessState) {
+        setSubmitButtonState(false, false);
+      }
     }
   });
 }

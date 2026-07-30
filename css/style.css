@@ -444,6 +444,10 @@ input[readonly] {
   background: rgba(255, 135, 135, 0.18);
   color: #a62b2b;
 }
+.btn-attendance--tentative {
+  background: rgba(255, 199, 77, 0.16);
+  color: #b36f00;
+}
 .btn-attendance.active {
   box-shadow: 0 16px 28px rgba(81, 201, 121, 0.18);
 }

@@ -236,6 +236,7 @@ function cancelReply() {
 function setAttendanceStatus(status) {
   const statusEl = document.getElementById("attendance-status");
   const yesBtn = document.querySelector(".btn-attendance--yes");
+  const tentativeBtn = document.querySelector(".btn-attendance--tentative");
   const noBtn = document.querySelector(".btn-attendance--no");
   const storedStatus = status || "";
 
@@ -243,10 +244,14 @@ function setAttendanceStatus(status) {
     statusEl.textContent = storedStatus
       ? storedStatus === "Hadir"
         ? "✅ Hadir"
-        : "❌ Berhalangan"
+        : storedStatus === "Tentatif"
+          ? "⏳ Tentatif"
+          : "❌ Berhalangan"
       : "Belum dipilih";
   }
   if (yesBtn) yesBtn.classList.toggle("active", storedStatus === "Hadir");
+  if (tentativeBtn)
+    tentativeBtn.classList.toggle("active", storedStatus === "Tentatif");
   if (noBtn) noBtn.classList.toggle("active", storedStatus === "Tidak Hadir");
 }
 
@@ -254,6 +259,21 @@ function confirmAttendance(status) {
   setAttendanceStatus(status);
   saveAttendanceStatus(status);
   toggleAttendanceSheet(false);
+}
+
+function getAttendanceBadge(attendance) {
+  const text = (attendance || "").toString().trim();
+  const normalized = text.toLowerCase();
+  if (normalized === "hadir") {
+    return { icon: "✅", className: "ig-attendance--yes" };
+  }
+  if (normalized === "tentatif") {
+    return { icon: "⏳", className: "ig-attendance--tentative" };
+  }
+  if (normalized === "tidak hadir" || normalized === "berhalangan") {
+    return { icon: "❌", className: "ig-attendance--no" };
+  }
+  return { icon: "", className: "" };
 }
 
 function saveAttendanceStatus(status) {
@@ -383,21 +403,9 @@ function loadComments() {
       mains.reverse().forEach((m) => {
         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
         const attendance = (m.kehadiran || "").toString().trim();
-        const normalized = attendance.toLowerCase();
-        const attendanceClass =
-          normalized.includes("hadir") && !normalized.includes("tidak")
-            ? "ig-attendance--yes"
-            : normalized.includes("tidak") || normalized.includes("berhalangan")
-              ? "ig-attendance--no"
-              : "";
-        const attendanceIcon =
-          normalized.includes("hadir") && !normalized.includes("tidak")
-            ? "✅"
-            : normalized.includes("tidak") || normalized.includes("berhalangan")
-              ? "❌"
-              : "";
-        const attendanceLabel = attendanceIcon
-          ? `<span class="ig-attendance ${attendanceClass}" title="${attendance}">${attendanceIcon}</span>`
+        const badge = getAttendanceBadge(attendance);
+        const attendanceLabel = badge.icon
+          ? `<span class="ig-attendance ${badge.className}" title="${attendance}">${badge.icon}</span>`
           : "";
 
         let html = `
@@ -426,27 +434,9 @@ function loadComments() {
           html += `<div class="reply-container">`;
           sub.forEach((s) => {
             const replyAttendance = (s.kehadiran || "").toString().trim();
-            const replyNormalized = replyAttendance.toLowerCase();
-            const replyAttendanceClass =
-              replyNormalized.includes("hadir") &&
-              !replyNormalized.includes("tidak")
-                ? "ig-attendance--yes"
-                : replyNormalized.includes("tidak") ||
-                    replyNormalized.includes("berhalangan")
-                  ? "ig-attendance--no"
-                  : "";
-            const replyAttendanceIcon =
-              replyNormalized.includes("✅") ||
-              (replyNormalized.includes("hadir") &&
-                !replyNormalized.includes("tidak"))
-                ? "✅"
-                : replyNormalized.includes("❌") ||
-                    replyNormalized.includes("tidak") ||
-                    replyNormalized.includes("berhalangan")
-                  ? "❌"
-                  : "";
-            const replyAttendanceLabel = replyAttendanceIcon
-              ? `<span class="ig-attendance ${replyAttendanceClass}" title="${replyAttendance}">${replyAttendanceIcon}</span>`
+            const replyBadge = getAttendanceBadge(replyAttendance);
+            const replyAttendanceLabel = replyBadge.icon
+              ? `<span class="ig-attendance ${replyBadge.className}" title="${replyAttendance}">${replyBadge.icon}</span>`
               : "";
 
             html += `

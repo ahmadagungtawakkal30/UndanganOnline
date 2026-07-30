@@ -409,16 +409,17 @@ input[readonly] {
   margin-bottom: 12px;
 }
 .attendance-status strong {
-  color: #1f3a5f;
-  font-size: 1rem;
+  color: #153243;
+  font-size: 0.98rem;
   font-weight: 700;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(31, 58, 95, 0.08);
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(21, 50, 67, 0.06);
+  border: 1px solid rgba(21, 50, 67, 0.04);
 }
 .attendance-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 12px;
 }
@@ -437,19 +438,46 @@ input[readonly] {
   transform: translateY(-1px);
 }
 .btn-attendance--yes {
-  background: rgba(81, 201, 121, 0.22);
-  color: #1f6a3d;
+  background: linear-gradient(
+    135deg,
+    rgba(81, 201, 121, 0.18),
+    rgba(34, 139, 34, 0.08)
+  );
+  color: #165f2e;
+  border: 1px solid rgba(34, 139, 34, 0.08);
 }
 .btn-attendance--no {
-  background: rgba(255, 135, 135, 0.18);
-  color: #a62b2b;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 135, 135, 0.14),
+    rgba(178, 34, 34, 0.06)
+  );
+  color: #7a1f1f;
+  border: 1px solid rgba(178, 34, 34, 0.06);
 }
 .btn-attendance--tentative {
-  background: rgba(255, 199, 77, 0.16);
-  color: #b36f00;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 199, 77, 0.12),
+    rgba(218, 165, 32, 0.05)
+  );
+  color: #8a5b00;
+  border: 1px solid rgba(218, 165, 32, 0.06);
 }
-.btn-attendance.active {
-  box-shadow: 0 16px 28px rgba(81, 201, 121, 0.18);
+.btn-attendance--yes.active {
+  box-shadow: 0 12px 30px rgba(34, 139, 34, 0.14);
+  background: linear-gradient(135deg, #4db76a, #2d8f47);
+  color: #fff;
+}
+.btn-attendance--tentative.active {
+  box-shadow: 0 12px 30px rgba(218, 165, 32, 0.12);
+  background: linear-gradient(135deg, #ffd36b, #e0a400);
+  color: #111;
+}
+.btn-attendance--no.active {
+  box-shadow: 0 12px 30px rgba(178, 34, 34, 0.12);
+  background: linear-gradient(135deg, #ff7f7f, #d04b4b);
+  color: #fff;
 }
 .attendance-hint {
   margin: 0;

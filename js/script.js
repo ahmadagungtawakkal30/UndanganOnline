@@ -65,6 +65,8 @@ async function fetchGuestPreview() {
       // tampilkan nama sebagai preview saja; jangan otomatis membuka undangan
       if (guestDisplayEl) guestDisplayEl.innerText = data.name;
       if (formNamaEl) formNamaEl.value = data.name;
+      // muat status kehadiran yang sudah ada untuk nama ini
+      if (typeof loadAttendance === "function") loadAttendance();
     }
   } catch (e) {
     showLoading(false);
@@ -339,7 +341,11 @@ function saveAttendanceStatus(status) {
 }
 
 function loadAttendance() {
-  const name = (tamu || "").toLowerCase().trim();
+  // Derive guest name: prefer form value (set by preview), fallback to ?to= param
+  const rawName = (formNamaEl?.value || urlParams.get("to") || "")
+    .toString()
+    .trim();
+  const name = rawName.toLowerCase();
   if (!name) return;
 
   fetch(scriptURL + "?action=getAttendance")

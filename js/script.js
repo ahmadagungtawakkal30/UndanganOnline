@@ -363,6 +363,9 @@ function loadComments() {
   const container = document.getElementById("comment-container");
   if (!container) return;
 
+  container.innerHTML =
+    '<p style="text-align:center; color:#999; font-size:.8rem;">Memuat pesan...</p>';
+
   fetch(scriptURL + "?action=getMessages")
     .then((res) => res.json())
     .then((data) => {
@@ -520,9 +523,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (formNamaEl) formNamaEl.value = tamu;
         cancelReply();
         setAttendanceStatus();
-        setTimeout(() => {
-          if (typeof loadComments === "function") loadComments();
-        }, 2000);
+        if (typeof loadComments === "function") loadComments();
       });
     });
   }

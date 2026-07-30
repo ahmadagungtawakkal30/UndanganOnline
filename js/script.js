@@ -315,7 +315,7 @@ function loadComments() {
               ? "ig-attendance--no"
               : "";
         const attendanceLabel = attendance
-          ? `<span class="ig-attendance ${attendanceClass}">${attendance === "Hadir" ? "✅ Hadir" : attendance === "Tidak Hadir" ? "❌ Berhalangan" : attendance}</span>`
+          ? `<span class="ig-attendance ${attendanceClass}" title="${attendance === "Hadir" ? "Hadir" : attendance === "Tidak Hadir" ? "Berhalangan" : attendance}">${attendance === "Hadir" ? "✅" : attendance === "Tidak Hadir" ? "❌" : ""}</span>`
           : "";
 
         let html = `

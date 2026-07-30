@@ -393,102 +393,101 @@ input[readonly] {
 }
 
 .attendance-panel {
-  background: white;
-  border-radius: 18px;
-  padding: 18px 20px;
-  margin-bottom: 20px;
-  border: 1px solid #eee;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  background: #f7f9ff;
+  border-radius: 24px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  border: 1px solid #dde2f3;
+  box-shadow: 0 14px 36px rgba(18, 29, 64, 0.08);
 }
 .attendance-status {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  font-size: 0.95rem;
-  margin-bottom: 12px;
+  gap: 14px;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  background: #ffffff;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid #e5ebf6;
+}
+.attendance-status span {
+  color: #122339;
+  font-weight: 700;
 }
 .attendance-status strong {
-  color: #153243;
-  font-size: 0.98rem;
+  color: #0b1726;
+  font-size: 1rem;
   font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 12px;
-  background: rgba(21, 50, 67, 0.06);
-  border: 1px solid rgba(21, 50, 67, 0.04);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #eef3ff;
+  border: 1px solid #d6dfee;
 }
 .attendance-actions {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-bottom: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
 }
 .btn-attendance {
-  border: none;
+  border: 1px solid transparent;
   border-radius: 999px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   cursor: pointer;
   font-weight: 700;
+  font-size: 0.96rem;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
-    opacity 0.2s ease;
+    background 0.2s ease,
+    color 0.2s ease;
 }
 .btn-attendance:hover {
   transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(15, 23, 42, 0.12);
 }
 .btn-attendance--yes {
-  background: linear-gradient(
-    135deg,
-    rgba(81, 201, 121, 0.18),
-    rgba(34, 139, 34, 0.08)
-  );
-  color: #165f2e;
-  border: 1px solid rgba(34, 139, 34, 0.08);
+  background: #eef7f0;
+  color: #15563f;
 }
 .btn-attendance--no {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 135, 135, 0.14),
-    rgba(178, 34, 34, 0.06)
-  );
-  color: #7a1f1f;
-  border: 1px solid rgba(178, 34, 34, 0.06);
+  background: #fff0f1;
+  color: #8c2e33;
 }
 .btn-attendance--tentative {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 199, 77, 0.12),
-    rgba(218, 165, 32, 0.05)
-  );
-  color: #8a5b00;
-  border: 1px solid rgba(218, 165, 32, 0.06);
+  background: #fff8e4;
+  color: #7c6210;
 }
 .btn-attendance--yes.active {
-  box-shadow: 0 12px 30px rgba(34, 139, 34, 0.14);
-  background: linear-gradient(135deg, #4db76a, #2d8f47);
-  color: #fff;
+  background: #1e7644;
+  color: #ffffff;
 }
 .btn-attendance--tentative.active {
-  box-shadow: 0 12px 30px rgba(218, 165, 32, 0.12);
-  background: linear-gradient(135deg, #ffd36b, #e0a400);
-  color: #111;
+  background: #b99715;
+  color: #111111;
 }
 .btn-attendance--no.active {
-  box-shadow: 0 12px 30px rgba(178, 34, 34, 0.12);
-  background: linear-gradient(135deg, #ff7f7f, #d04b4b);
-  color: #fff;
+  background: #9c3137;
+  color: #ffffff;
 }
 .attendance-hint {
   margin: 0;
-  color: #3f4a5a;
-  font-size: 0.86rem;
-  line-height: 1.6;
+  color: #172439;
+  font-size: 0.96rem;
+  font-weight: 600;
+  line-height: 1.78;
+}
+
+.attendance-sheet p,
+.attendance-sheet p span {
+  color: #11263b;
 }
 
 .attendance-status span,
 .attendance-status strong {
-  color: #11263b;
+  color: #09131f;
 }
 
 #comment-section {

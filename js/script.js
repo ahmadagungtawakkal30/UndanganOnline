@@ -282,13 +282,13 @@ function setAttendanceStatus(status) {
   const yesBtn = document.querySelector(".btn-attendance--yes");
   const tentativeBtn = document.querySelector(".btn-attendance--tentative");
   const noBtn = document.querySelector(".btn-attendance--no");
-  const storedStatus = status || "";
+  const storedStatus = (status || "").toString().trim();
 
   if (statusEl) {
     statusEl.textContent = storedStatus
-      ? storedStatus === "Hadir"
+      ? storedStatus.toLowerCase() === "hadir"
         ? "✅ Hadir"
-        : storedStatus === "Tentatif"
+        : storedStatus.toLowerCase() === "tentatif"
           ? "⏳ Tentatif"
           : "❌ Berhalangan"
       : "Belum dipilih";
@@ -359,7 +359,7 @@ function loadAttendance() {
         .pop();
 
       if (current && current.kehadiran) {
-        setAttendanceStatus(current.kehadiran);
+        setAttendanceStatus(current.kehadiran.toString().trim());
       }
     })
     .catch(() => {

@@ -283,20 +283,63 @@ function setAttendanceStatus(status) {
   const tentativeBtn = document.querySelector(".btn-attendance--tentative");
   const noBtn = document.querySelector(".btn-attendance--no");
   const storedStatus = (status || "").toString().trim();
+  const normalizedStatus = storedStatus.toLowerCase();
+  const isHadir = normalizedStatus === "hadir";
+  const isTentatif = normalizedStatus === "tentatif";
+  const isTidakHadir =
+    normalizedStatus === "tidak hadir" || normalizedStatus === "berhalangan";
 
   if (statusEl) {
     statusEl.textContent = storedStatus
-      ? storedStatus.toLowerCase() === "hadir"
+      ? isHadir
         ? "✅ Hadir"
-        : storedStatus.toLowerCase() === "tentatif"
+        : isTentatif
           ? "⏳ Tentatif"
-          : "❌ Berhalangan"
+          : isTidakHadir
+            ? "❌ Berhalangan"
+            : storedStatus
       : "Belum dipilih";
   }
-  if (yesBtn) yesBtn.classList.toggle("active", storedStatus === "Hadir");
-  if (tentativeBtn)
-    tentativeBtn.classList.toggle("active", storedStatus === "Tentatif");
-  if (noBtn) noBtn.classList.toggle("active", storedStatus === "Tidak Hadir");
+  if (yesBtn) yesBtn.classList.toggle("active", isHadir);
+  if (tentativeBtn) tentativeBtn.classList.toggle("active", isTentatif);
+  if (noBtn) noBtn.classList.toggle("active", isTidakHadir);
+}
+
+function loadAttendance() {
+  // Derive guest name: prefer form value, then cover preview, then ?to param
+  const rawName = (
+    formNamaEl?.value ||
+    guestDisplayEl?.innerText ||
+    urlParams.get("to") ||
+    ""
+  )
+    .toString()
+    .trim();
+  const normalizedName = rawName.toLowerCase().replace(/\s+/g, " ").trim();
+  if (!normalizedName) return;
+
+  fetch(scriptURL + "?action=getAttendance")
+    .then((res) => res.json())
+    .then((data) => {
+      if (!Array.isArray(data)) return;
+      const current = data
+        .filter((item) => {
+          const itemName = (item.nama || "")
+            .toString()
+            .toLowerCase()
+            .replace(/\s+/g, " ")
+            .trim();
+          return itemName === normalizedName;
+        })
+        .pop();
+
+      if (current && current.kehadiran) {
+        setAttendanceStatus(current.kehadiran.toString().trim());
+      }
+    })
+    .catch(() => {
+      // ignore attendance load errors
+    });
 }
 
 function confirmAttendance(status) {
@@ -341,8 +384,13 @@ function saveAttendanceStatus(status) {
 }
 
 function loadAttendance() {
-  // Derive guest name: prefer form value (set by preview), fallback to ?to= param
-  const rawName = (formNamaEl?.value || urlParams.get("to") || "")
+  // Derive guest name: prefer form value, then cover preview, then ?to param
+  const rawName = (
+    formNamaEl?.value ||
+    guestDisplayEl?.innerText ||
+    urlParams.get("to") ||
+    ""
+  )
     .toString()
     .trim();
   const name = rawName.toLowerCase();

@@ -410,20 +410,20 @@ input[readonly] {
   background: #ffffff;
   padding: 16px 18px;
   border-radius: 18px;
-  border: 1px solid #e5ebf6;
+  border: 1px solid #c1cfe3;
 }
 .attendance-status span {
-  color: #122339;
-  font-weight: 700;
+  color: #04111b;
+  font-weight: 900;
 }
 .attendance-status strong {
-  color: #0b1726;
+  color: #04111b;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 900;
   padding: 10px 18px;
   border-radius: 999px;
-  background: #eef3ff;
-  border: 1px solid #d6dfee;
+  background: #f2f7ff;
+  border: 1px solid #c1cfe3;
 }
 .attendance-actions {
   display: grid;
@@ -474,20 +474,21 @@ input[readonly] {
 }
 .attendance-hint {
   margin: 0;
-  color: #172439;
-  font-size: 0.96rem;
+  color: #b9730c;
+  font-size: 0.82rem;
   font-weight: 600;
-  line-height: 1.78;
+  line-height: 1.6;
 }
 
 .attendance-sheet p,
 .attendance-sheet p span {
-  color: #11263b;
+  color: #b9730c;
+  font-size: 0.82rem;
 }
 
 .attendance-status span,
 .attendance-status strong {
-  color: #09131f;
+  color: #08121f !important;
 }
 
 #comment-section {

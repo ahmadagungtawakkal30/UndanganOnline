@@ -32,10 +32,16 @@ const scriptURL =
   "https://script.google.com/macros/s/AKfycbzZzOFnNP4Mhn9ZIukpDwlwsz5tc2pLF02USOwyfw7vS22lfZZNhJGw5Z47V35EHImt/exec";
 
 const urlParams = new URLSearchParams(window.location.search);
+const toParam = urlParams.get("to");
 const guestDisplayEl = document.getElementById("guest-display");
-if (guestDisplayEl) guestDisplayEl.innerText = "Memuat Nama...";
+if (guestDisplayEl) {
+  // Tampilkan nama di cover jika ada parameter ?to=, tapi ini hanya tampilan.
+  guestDisplayEl.innerText = toParam
+    ? decodeURIComponent(toParam).replace(/\+/g, " ")
+    : "Memuat Nama...";
+}
 const formNamaEl = document.getElementById("form-nama");
-if (formNamaEl) formNamaEl.value = "";
+// Jangan isi `form-nama` dari query string — nama resmi harus datang dari server setelah token valid
 
 const musicBtn = document.getElementById("music-control");
 const musicIcon = document.getElementById("music-icon");
@@ -463,60 +469,67 @@ function loadComments() {
 }
 
 function showLoading(show) {
-  document.getElementById("loading-overlay")?.classList.toggle("hidden", !show);
-}
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("id");
+  const nameParam = params.get("to");
 
-function notify(title, message, type = "") {
-  const modal = document.getElementById("notify-modal");
-  const titleEl = document.getElementById("notify-title");
-  const msgEl = document.getElementById("notify-message");
-
-  titleEl.textContent = title;
-  msgEl.textContent = message;
-
-  modal.classList.remove("hidden");
-  modal.classList.remove("notify-error");
-
-  if (type === "error") {
-    modal.classList.add("notify-error");
-  }
-}
-
-function closeNotify() {
-  document.getElementById("notify-modal").classList.add("hidden");
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("rsvp-form");
-  if (form) {
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("submit-btn");
-      if (btn) {
-        btn.disabled = true;
-        btn.innerText = "Mengirim...";
-      }
-      fetch(scriptURL, {
-        method: "POST",
-        body: new FormData(e.target),
-        mode: "no-cors",
-      }).then(() => {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerText = "Kirim Lagi";
-        }
-        e.target.reset();
-        if (formNamaEl) formNamaEl.value = tamu;
-        cancelReply();
-        if (typeof loadComments === "function") loadComments();
-      });
-    });
+  // Jika ada token, verifikasi lewat token. Jika tidak ada token tetapi ada ?to=, lakukan verifikasi nama (lebih lemah).
+  if (!token && !nameParam) {
+    notify(
+      "Link Tidak Valid",
+      "Undangan ini tidak memiliki kode verifikasi akses.",
+      "error",
+    );
+    return;
   }
 
-  setAttendanceStatus();
-  loadAttendance();
-  if (typeof loadComments === "function") {
-    loadComments();
+  showLoading(true);
+
+  try {
+    const query = token
+      ? `?action=checkGuest&id=${encodeURIComponent(token)}`
+      : `?action=checkGuest&name=${encodeURIComponent(nameParam)}`;
+
+    const res = await fetch(scriptURL + query);
+    const data = await res.json();
+
+    showLoading(false);
+
+    if (!data.valid) {
+      notify(
+        "Undangan Tidak Terdaftar",
+        "Maaf, data undangan Anda tidak valid.",
+        "error",
+      );
+      return;
+    }
+
+    const namaAsliTamu = data.name;
+
+    if (guestDisplayEl) guestDisplayEl.innerText = namaAsliTamu;
+    if (formNamaEl) formNamaEl.value = namaAsliTamu;
+
+    // ===== BUKA LAYAR UNDANGAN =====
+    document.getElementById("cover")?.classList.add("hide");
+    document.getElementById("main-content")?.classList.add("show");
+    document.body.style.overflow = "auto";
+
+    if (myAudio) {
+      myAudio.play().catch(() => {});
+      musicBtn.style.display = "flex";
+      playBtn.style.animation = "spin 4s linear infinite";
+    }
+
+    AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
+    loadComments?.();
+    if (typeof loadAttendance === "function") loadAttendance();
+  } catch (err) {
+    showLoading(false);
+    notify(
+      "Terjadi Kesalahan",
+      "Gagal memverifikasi akun undangan. Silakan coba lagi.",
+    );
+    console.error(err);
   }
 
   // smooth scroll

@@ -59,8 +59,11 @@ function doPost(e) {
    CEK VALIDASI TOKEN & AMBIL NAMA
 ========================= */
 function checkGuest(e) {
-  const tokenInput = (e.parameter.id || "").toUpperCase().trim();
-  if (!tokenInput) return json({ valid: false, name: "" });
+  // Terima baik token (id) maupun nama (name) sebagai opsi verifikasi.
+  const tokenInput = (e.parameter.id || "").toString().toUpperCase().trim();
+  const nameInput = (e.parameter.name || "").toString().trim();
+
+  if (!tokenInput && !nameInput) return json({ valid: false, name: "" });
 
   const sheet = SpreadsheetApp.getActive().getSheetByName(SHEET_TAMU);
   if (!sheet || sheet.getLastRow() < 1) return json({ valid: false, name: "" });
@@ -71,9 +74,23 @@ function checkGuest(e) {
   let namaTamu = "";
 
   for (let i = 0; i < data.length; i++) {
-    if (data[i][0].toString().toUpperCase().trim() === tokenInput) {
+    const token = data[i][0].toString().toUpperCase().trim();
+    const nama = data[i][1].toString().trim();
+
+    if (tokenInput && token === tokenInput) {
       valid = true;
-      namaTamu = data[i][1];
+      namaTamu = nama;
+      break;
+    }
+
+    if (
+      !tokenInput &&
+      nameInput &&
+      nama.toLowerCase() === nameInput.toLowerCase()
+    ) {
+      // fallback: jika hanya dikirim nama, cocokkan nama (case-insensitive)
+      valid = true;
+      namaTamu = nama;
       break;
     }
   }

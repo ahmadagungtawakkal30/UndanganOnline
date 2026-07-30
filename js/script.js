@@ -1,22 +1,20 @@
-//ganti tema terang/gelap
+// ===== TEMA TERANG / GELAP =====
 function toggleTheme() {
   document.body.classList.toggle("dark-night");
-
   const isDark = document.body.classList.contains("dark-night");
   const themeToggleEl = document.getElementById("theme-toggle");
   if (themeToggleEl) themeToggleEl.innerText = isDark ? "☀️" : "🌙";
-
   localStorage.setItem("theme", isDark ? "dark" : "light");
 }
-const savedTheme = localStorage.getItem("theme");
 
+const savedTheme = localStorage.getItem("theme");
 if (savedTheme === "light") {
   document.body.classList.remove("dark-night");
   const themeToggleEl2 = document.getElementById("theme-toggle");
   if (themeToggleEl2) themeToggleEl2.innerText = "🌙";
 }
 
-//
+// ===== HAPTIC FEEDBACK =====
 function haptic() {
   if (navigator.vibrate) navigator.vibrate(15);
 }
@@ -28,6 +26,18 @@ try {
   // ignore
 }
 
+// ===== ESCAPE HTML (Mencegah XSS) =====
+function escapeHTML(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// ===== CONFIG & PARAMETERS =====
 const scriptURL =
   "https://script.google.com/macros/s/AKfycbxLSxWqitV6Mve4CjSmiTenjtK6dnfO0SE_9JArtF7qChd_rK9X2Qqnlic9tyEdie3_/exec";
 
@@ -35,37 +45,31 @@ const urlParams = new URLSearchParams(window.location.search);
 const tokenParam = urlParams.get("id");
 const toParam = urlParams.get("to");
 const guestDisplayEl = document.getElementById("guest-display");
+const formNamaEl = document.getElementById("form-nama");
+
 if (guestDisplayEl) {
-  // Jika ada token, tampilkan loading dulu; kalau tidak ada token, gunakan ?to= sebagai preview.
   guestDisplayEl.innerText = tokenParam
     ? "Memuat Nama..."
     : toParam
       ? decodeURIComponent(toParam).replace(/\+/g, " ")
       : "Memuat Nama...";
 }
-const formNamaEl = document.getElementById("form-nama");
-// Jangan isi `form-nama` dari query string — nama resmi harus datang dari server setelah token valid
 
-// Jika ada token di URL saat halaman dimuat, ambil nama tamu segera dan tampilkan sebagai preview di cover.
+// ===== FETCH GUEST PREVIEW =====
 async function fetchGuestPreview() {
-  console.debug("fetchGuestPreview: start");
   try {
     const token = urlParams.get("id");
-    console.debug("fetchGuestPreview: token=", token);
     if (!token) return;
     showLoading(true);
     const res = await fetch(
       scriptURL + "?action=checkGuest&id=" + encodeURIComponent(token),
     );
-    console.debug("fetchGuestPreview: response status", res.status);
     const data = await res.json();
-    console.debug("fetchGuestPreview: data", data);
     showLoading(false);
+
     if (data && data.valid) {
-      // tampilkan nama sebagai preview saja; jangan otomatis membuka undangan
       if (guestDisplayEl) guestDisplayEl.innerText = data.name;
       if (formNamaEl) formNamaEl.value = data.name;
-      // muat status kehadiran yang sudah ada untuk nama ini
       if (typeof loadAttendance === "function") loadAttendance();
     }
   } catch (e) {
@@ -84,6 +88,7 @@ if (document.readyState === "loading") {
   attachRsvpFormHandler();
 }
 
+// ===== UTILS: FETCH WITH TIMEOUT =====
 async function fetchWithTimeout(url, options = {}, timeoutMs = 7000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -95,6 +100,35 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 7000) {
   }
 }
 
+// ===== BALAS PESAN & RESET BALASAN =====
+function setReply(id, name) {
+  const replyIdEl = document.getElementById("form-replyID");
+  const replyIndicator = document.getElementById("reply-indicator");
+  const replyToName = document.getElementById("reply-to-name");
+  const pesanEl =
+    document.getElementById("form-pesan") ||
+    document.querySelector("[name='pesan']");
+
+  if (replyIdEl) replyIdEl.value = id;
+  if (replyIndicator) replyIndicator.style.display = "block";
+  if (replyToName) replyToName.innerText = "@" + name;
+  if (pesanEl) {
+    pesanEl.value = "@" + name + " ";
+    pesanEl.focus();
+  }
+}
+
+function cancelReply() {
+  const replyIdEl = document.getElementById("form-replyID");
+  const replyIndicator = document.getElementById("reply-indicator");
+  const replyToName = document.getElementById("reply-to-name");
+
+  if (replyIdEl) replyIdEl.value = "";
+  if (replyToName) replyToName.innerText = "";
+  if (replyIndicator) replyIndicator.style.display = "none";
+}
+
+// ===== RSVP FORM HANDLER =====
 let submitResetTimer = null;
 
 function clearSubmitResetTimer() {
@@ -172,39 +206,45 @@ function attachRsvpFormHandler() {
         res.text().catch(() => ""),
         new Promise((resolve) => setTimeout(() => resolve(""), 600)),
       ]);
-      console.debug("saveMessage response:", text);
 
       if (text.toLowerCase().includes("blocked")) {
         throw new Error("Pesan diblokir oleh filter kata kasar.");
       }
 
       if (typeof loadComments === "function") {
-        try {
-          setTimeout(() => {
-            loadComments(5000).catch((refreshErr) => {
-              console.warn("Refresh comments failed:", refreshErr);
-            });
-          }, 200);
-        } catch (refreshErr) {
-          console.warn("Refresh comments failed:", refreshErr);
-        }
+        setTimeout(() => {
+          loadComments(5000).catch((refreshErr) => {
+            console.warn("Refresh comments failed:", refreshErr);
+          });
+        }, 200);
       }
 
       notify("Terkirim", "Pesan doa telah dikirim.");
       showSuccessState = true;
       setSubmitButtonState(false, true);
       clearSubmitResetTimer();
+
       submitResetTimer = window.setTimeout(() => {
         setSubmitButtonState(false, false);
       }, 1600);
+
+      // --- RESET FORM & UI BALASAN ---
       rsvpForm.reset();
-      if (formNamaEl) formNamaEl.value = nama;
-      cancelReply();
+      if (formNamaEl) formNamaEl.value = nama; // Tetap pertahankan nama pengirim
+
+      cancelReply(); // Sembunyikan indikator reply & reset input replyID
+
+      const pesanInput =
+        document.getElementById("form-pesan") ||
+        document.querySelector("[name='pesan']");
+      if (pesanInput) {
+        pesanInput.value = ""; // Pastikan area teks bersih kembali
+      }
     } catch (err) {
       console.error("Submit pesan error:", err);
       notify(
         "Gagal Mengirim",
-        "Pesan gagal terkirim. Silakan coba lagi.",
+        err.message || "Pesan gagal terkirim. Silakan coba lagi.",
         "error",
       );
     } finally {
@@ -215,9 +255,9 @@ function attachRsvpFormHandler() {
   });
 }
 
+// ===== PLAYER MUSIK =====
 const musicBtn = document.getElementById("music-control");
 const musicIcon = document.getElementById("music-icon");
-const toggleBtn = document.getElementById("music-toggle");
 const myAudio = document.getElementById("weddingMusic");
 const playBtn = document.getElementById("music-toggle");
 
@@ -228,13 +268,10 @@ const musicList = [
 ];
 
 let currentTrack = 0;
-let isPlaying = false;
 
-// set lagu pertama
 if (myAudio) {
   myAudio.src = musicList[currentTrack];
   myAudio.preload = "auto";
-  // auto next saat lagu selesai
   myAudio.addEventListener("ended", nextMusic);
 }
 
@@ -260,6 +297,7 @@ function nextMusic() {
   if (playBtn) playBtn.style.animation = "spin 4s linear infinite";
 }
 
+// ===== SWIPER SLIDER =====
 try {
   var swiper = new Swiper(".mySwiper", {
     effect: "slide",
@@ -279,53 +317,32 @@ try {
     autoplay: false,
   });
 } catch (e) {
-  // swiper failed to init (library not loaded) - ignore gracefully
+  // Swiper failed to init
 }
 
+// ===== UTILS: CLIPBOARD =====
 function copyToClipboard(elementId) {
   const el = document.getElementById(elementId);
   if (!el) return;
   let text = el.innerText;
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
-      alert("Berhasil disalin: " + text);
+      notify("Berhasil", "Nomor rekening berhasil disalin!");
     });
   } else {
-    // fallback
     const tmp = document.createElement("textarea");
     tmp.value = text;
     document.body.appendChild(tmp);
     tmp.select();
     try {
       document.execCommand("copy");
-      alert("Berhasil disalin: " + text);
+      notify("Berhasil", "Nomor rekening berhasil disalin!");
     } catch (e) {}
     document.body.removeChild(tmp);
   }
 }
 
-// function bukaUndangan() {
-//   const coverEl = document.getElementById("cover");
-//   const mainContentEl = document.getElementById("main-content");
-//   if (coverEl) coverEl.classList.add("hide");
-//   if (mainContentEl) mainContentEl.classList.add("show");
-//   document.body.style.overflow = "auto";
-
-//   if (myAudio) {
-//     myAudio.play().catch(() => {});
-//     if (musicBtn) musicBtn.style.display = "flex";
-//     if (playBtn) playBtn.style.animation = "spin 4s linear infinite";
-//   }
-
-//   if (window.AOS) AOS.init({ duration: 1200, once: true });
-//   if (typeof loadComments === "function") loadComments();
-//   setTimeout(() => {
-//     try {
-//       if (swiper && typeof swiper.update === "function") swiper.update();
-//     } catch (e) {}
-//   }, 500);
-// }
-
+// ===== BUKA UNDANGAN =====
 async function bukaUndangan() {
   const token = new URLSearchParams(window.location.search).get("id");
   const nameParam = new URLSearchParams(window.location.search).get("to");
@@ -366,6 +383,7 @@ async function bukaUndangan() {
     notify(
       "Terjadi Kesalahan",
       "Gagal memverifikasi akun undangan. Silakan coba lagi.",
+      "error",
     );
     console.error(err);
   }
@@ -375,43 +393,25 @@ function openInviteUI(namaAsliTamu) {
   if (guestDisplayEl) guestDisplayEl.innerText = namaAsliTamu;
   if (formNamaEl) formNamaEl.value = namaAsliTamu;
 
-  // ===== BUKA LAYAR UNDANGAN =====
   document.getElementById("cover")?.classList.add("hide");
   document.getElementById("main-content")?.classList.add("show");
   document.body.style.overflow = "auto";
 
   if (myAudio) {
     myAudio.play().catch(() => {});
-    musicBtn.style.display = "flex";
-    playBtn.style.animation = "spin 4s linear infinite";
+    if (musicBtn) musicBtn.style.display = "flex";
+    if (playBtn) playBtn.style.animation = "spin 4s linear infinite";
   }
 
-  AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
-  loadComments?.();
+  if (window.AOS) {
+    AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
+  }
+
+  if (typeof loadComments === "function") loadComments();
   if (typeof loadAttendance === "function") loadAttendance();
 }
 
-function setReply(id, name) {
-  const replyIdEl = document.getElementById("form-replyID");
-  const replyIndicator = document.getElementById("reply-indicator");
-  const replyToName = document.getElementById("reply-to-name");
-  const pesanEl = document.getElementById("form-pesan");
-  if (replyIdEl) replyIdEl.value = id;
-  if (replyIndicator) replyIndicator.style.display = "block";
-  if (replyToName) replyToName.innerText = "@" + name;
-  if (pesanEl) {
-    pesanEl.value = "@" + name + " ";
-    pesanEl.focus();
-  }
-}
-
-function cancelReply() {
-  const replyIdEl = document.getElementById("form-replyID");
-  const replyIndicator = document.getElementById("reply-indicator");
-  if (replyIdEl) replyIdEl.value = "";
-  if (replyIndicator) replyIndicator.style.display = "none";
-}
-
+// ===== KEHADIRAN (RSVP) =====
 function setAttendanceStatus(status) {
   const statusEl = document.getElementById("attendance-status");
   const yesBtn = document.querySelector(".btn-attendance--yes");
@@ -441,7 +441,6 @@ function setAttendanceStatus(status) {
 }
 
 function loadAttendance() {
-  // Derive guest name: prefer form value, then cover preview, then ?to param
   const rawName = (
     formNamaEl?.value ||
     guestDisplayEl?.innerText ||
@@ -472,9 +471,7 @@ function loadAttendance() {
         setAttendanceStatus(current.kehadiran.toString().trim());
       }
     })
-    .catch(() => {
-      // ignore attendance load errors
-    });
+    .catch(() => {});
 }
 
 function confirmAttendance(status) {
@@ -510,44 +507,13 @@ function saveAttendanceStatus(status) {
   params.append("nama", nama);
   params.append("kehadiran", status);
 
-  fetch(scriptURL + "?" + params.toString(), {
+  fetch(scriptURL, {
     method: "POST",
-    mode: "no-cors",
-  }).catch(() => {
-    // ignore backend errors if action not supported
-  });
-}
-
-function loadAttendance() {
-  // Derive guest name: prefer form value, then cover preview, then ?to param
-  const rawName = (
-    formNamaEl?.value ||
-    guestDisplayEl?.innerText ||
-    urlParams.get("to") ||
-    ""
-  )
-    .toString()
-    .trim();
-  const name = rawName.toLowerCase();
-  if (!name) return;
-
-  fetch(scriptURL + "?action=getAttendance")
-    .then((res) => res.json())
-    .then((data) => {
-      if (!Array.isArray(data)) return;
-      const current = data
-        .filter(
-          (item) => (item.nama || "").toString().toLowerCase().trim() === name,
-        )
-        .pop();
-
-      if (current && current.kehadiran) {
-        setAttendanceStatus(current.kehadiran.toString().trim());
-      }
-    })
-    .catch(() => {
-      // ignore attendance load errors
-    });
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    body: params.toString(),
+  }).catch(() => {});
 }
 
 function toggleAttendanceSheet(show) {
@@ -556,51 +522,11 @@ function toggleAttendanceSheet(show) {
   sheet.classList.toggle("hidden", !show);
 }
 
-// function loadComments() {
-//   const container = document.getElementById("comment-container");
-//   if (!container) return;
-//   fetch(scriptURL)
-//     .then((res) => res.json())
-//     .then((data) => {
-//       container.innerHTML = "";
-//       if (!data || data.length === 0) {
-//         container.innerHTML =
-//           '<p style="text-align:center; color:#999; font-size:0.8rem;">Belum ada ucapan.</p>';
-//         return;
-//       }
-//       const mains = data.filter((i) => !i.replyID);
-//       const replies = data.filter((i) => i.replyID);
-//       mains.reverse().forEach((m) => {
-//         const user = m.nama.replace(/\s+/g, "_").toLowerCase();
-//         let html = `<div class="ig-comment"><div class="ig-avatar">${m.nama.charAt(
-//           0
-//         )}</div><div class="ig-bubble"><span class="ig-username">${user}</span><span class="ig-text">${
-//           m.pesan
-//         }</span><div class="ig-meta"><span onclick="setReply('${
-//           m.id
-//         }', '${user}')" style="cursor:pointer; color:var(--primary);">Balas</span></div></div></div>`;
-//         const sub = replies.filter((r) => String(r.replyID) === String(m.id));
-//         if (sub.length > 0) {
-//           html += '<div class="reply-container">';
-//           sub.forEach((s) => {
-//             html += `<div class="ig-comment"><div class="ig-avatar" style="width:25px; height:25px; font-size:0.6rem;">${s.nama.charAt(
-//               0
-//             )}</div><div class="ig-bubble"><span class="ig-username">${s.nama.toLowerCase()}</span><span class="ig-text">${
-//               s.pesan
-//             }</span></div></div>`;
-//           });
-//           html += "</div>";
-//         }
-//         container.innerHTML += html;
-//       });
-//     })
-//     .catch((err) => {
-//       // ignore fetch errors (e.g., CORS) but keep app working
-//     });
-// }
-
+// ===== MEMUAT PESAN / UCAPAN =====
 function formatDate(dateString) {
+  if (!dateString) return "";
   const d = new Date(dateString);
+  if (isNaN(d.getTime())) return dateString;
   return d.toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "short",
@@ -619,15 +545,11 @@ function loadComments(timeoutMs = 8000) {
 
   return fetchWithTimeout(
     `${scriptURL}?action=getMessages&_=${Date.now()}`,
-    {
-      cache: "no-store",
-    },
+    { cache: "no-store" },
     timeoutMs,
   )
     .then((res) => {
-      if (!res.ok) {
-        throw new Error(`getMessages returned ${res.status}`);
-      }
+      if (!res.ok) throw new Error(`getMessages returned ${res.status}`);
       return res.json();
     })
     .then((data) => {
@@ -643,27 +565,31 @@ function loadComments(timeoutMs = 8000) {
       const replies = data.filter((i) => i.replyID);
 
       mains.reverse().forEach((m) => {
-        const user = m.nama.replace(/\s+/g, "_").toLowerCase();
+        const rawUser = (m.nama || "Tamu").replace(/\s+/g, "_").toLowerCase();
+        const safeUser = escapeHTML(rawUser);
+        const safePesan = escapeHTML(m.pesan);
+        const safeNama = escapeHTML(m.nama || "Tamu");
+        const safeWaktu = escapeHTML(formatDate(m.waktu));
+        const safeId = escapeHTML(m.id);
+
         const attendance = (m.kehadiran || "").toString().trim();
         const badge = getAttendanceBadge(attendance);
         const attendanceLabel = badge.icon
-          ? `<span class="ig-attendance ${badge.className}" title="${attendance}">${badge.icon}</span>`
+          ? `<span class="ig-attendance ${badge.className}" title="${escapeHTML(attendance)}">${badge.icon}</span>`
           : "";
 
         let html = `
           <div class="ig-comment">
-            <div class="ig-avatar">${m.nama.charAt(0)}</div>
+            <div class="ig-avatar">${safeNama.charAt(0)}</div>
             <div class="ig-bubble">
               <div class="ig-comment-header">
-                <span class="ig-username">${user}</span>
+                <span class="ig-username">${safeUser}</span>
                 ${attendanceLabel}
               </div>
-              <span class="ig-text">${m.pesan}</span>
-              <span class="ig-time">${formatDate(m.waktu)}</span>
+              <span class="ig-text">${safePesan}</span>
+              <span class="ig-time">${safeWaktu}</span>
               <div class="ig-meta">
-                <span onclick="setReply('${
-                  m.id
-                }','${user}')" style="cursor:pointer;color:var(--primary);">
+                <span onclick="setReply('${safeId}','${safeUser}')" style="cursor:pointer;color:var(--primary);">
                   Balas
                 </span>
               </div>
@@ -678,21 +604,21 @@ function loadComments(timeoutMs = 8000) {
             const replyAttendance = (s.kehadiran || "").toString().trim();
             const replyBadge = getAttendanceBadge(replyAttendance);
             const replyAttendanceLabel = replyBadge.icon
-              ? `<span class="ig-attendance ${replyBadge.className}" title="${replyAttendance}">${replyBadge.icon}</span>`
+              ? `<span class="ig-attendance ${replyBadge.className}" title="${escapeHTML(replyAttendance)}">${replyBadge.icon}</span>`
               : "";
 
             html += `
               <div class="ig-comment">
                 <div class="ig-avatar" style="width:25px;height:25px;font-size:.6rem">
-                  ${s.nama.charAt(0)}
+                  ${escapeHTML(s.nama || "Tamu").charAt(0)}
                 </div>
                 <div class="ig-bubble">
                   <div class="ig-comment-header">
-                    <span class="ig-username">${s.nama.toLowerCase()}</span>
+                    <span class="ig-username">${escapeHTML((s.nama || "").toLowerCase())}</span>
                     ${replyAttendanceLabel}
                   </div>
-                  <span class="ig-text">${s.pesan}</span>
-                  <span class="ig-time">${formatDate(s.waktu)}</span>
+                  <span class="ig-text">${escapeHTML(s.pesan)}</span>
+                  <span class="ig-time">${escapeHTML(formatDate(s.waktu))}</span>
                 </div>
               </div>
             `;
@@ -708,8 +634,23 @@ function loadComments(timeoutMs = 8000) {
     });
 }
 
+// ===== UI HELPER: NOTIFY & LOADING =====
+function notify(title, message, type = "info") {
+  const modal = document.getElementById("notify-modal");
+  const titleEl = document.getElementById("notify-title");
+  const msgEl = document.getElementById("notify-message");
+
+  if (titleEl) titleEl.innerText = title;
+  if (msgEl) msgEl.innerText = message;
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeNotify() {
+  const modal = document.getElementById("notify-modal");
+  if (modal) modal.classList.add("hidden");
+}
+
 function showLoading(show) {
-  // Toggle simple loading state on the open button and optional overlay.
   const overlay = document.getElementById("loading-overlay");
   if (overlay) overlay.style.display = show ? "flex" : "none";
 
@@ -720,13 +661,12 @@ function showLoading(show) {
   }
 }
 
-// smooth scroll
+// ===== NAVIGATION & SCROLL =====
 window.scrollToSection = function (id) {
   const target = document.getElementById(id);
   if (target) target.scrollIntoView({ behavior: "smooth" });
 };
 
-// auto highlight nav
 const navButtons = document.querySelectorAll(".nav-widget button");
 const sectionMap = {
   hero: 0,
@@ -755,12 +695,14 @@ window.addEventListener("scroll", () => {
 
   navButtons.forEach((btn) => btn.classList.remove("active"));
   if (current && sectionMap[current] !== undefined) {
-    navButtons[sectionMap[current]].classList.add("active");
+    if (navButtons[sectionMap[current]]) {
+      navButtons[sectionMap[current]].classList.add("active");
+    }
   }
 });
 
-// countdown
-const targetDate = new Date("2027-01-01T08:00:00");
+// ===== COUNTDOWN =====
+const targetDate = new Date("2025-12-25T08:00:00");
 const daysEl = document.getElementById("days");
 const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");
@@ -816,7 +758,7 @@ function updateCountdown() {
   const minutes = Math.floor((diff / (1000 * 60)) % 60);
   const seconds = Math.floor((diff / 1000) % 60);
 
-  if (daysEl) daysEl.textContent = days;
+  if (daysEl) daysEl.textContent = String(days).padStart(2, "0");
   if (hoursEl) hoursEl.textContent = String(hours).padStart(2, "0");
   if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, "0");
   if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, "0");
@@ -825,26 +767,16 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// scroll progress
+// ===== SCROLL PROGRESS BAR =====
 window.addEventListener("scroll", () => {
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const progress = (scrollTop / docHeight) * 100;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
   const progEl = document.getElementById("scroll-progress");
   if (progEl) progEl.style.width = progress + "%";
 });
-// stray closing removed
 
-// ===== NAV WIDGET TOGGLE =====
-const navWidget = document.getElementById("navWidget");
-const navToggle = document.querySelector(".nav-toggle");
-
-// let navOpen = true;
-
-// if (window.innerWidth < 600) {
-//   const navWidgetEl = document.getElementById("navWidget");
-//   if (navWidgetEl) navWidgetEl.classList.add("closed");
-// }
+// ===== TOGGLE NAV & LOGOUT =====
 function toggleNav() {
   const nav = document.getElementById("navWidget");
   if (!nav) return;
@@ -852,7 +784,6 @@ function toggleNav() {
 }
 
 function logout() {
-  // hentikan audio jika berjalan
   try {
     if (myAudio) {
       myAudio.pause();
@@ -860,14 +791,71 @@ function logout() {
     }
   } catch (e) {}
 
-  // clear storage (local/session)
   try {
     localStorage.clear();
     sessionStorage.clear();
   } catch (e) {}
 
-  // redirect ke halaman tanpa query string untuk 'logout'
   const u = new URL(window.location.href);
   u.search = "";
   window.location.href = u.toString();
 }
+
+// Function bantu untuk menentukan badge berdasarkan 3 kondisi
+function getIndikatorKehadiran(status) {
+  const statusNormalized = (status || "").toLowerCase().trim();
+
+  switch (statusNormalized) {
+    case "hadir":
+      return { label: "Hadir", icon: "✓", warnaClass: "status-hadir" };
+    case "tentatif":
+    case "ragu":
+      return { label: "Tentatif", icon: "?", warnaClass: "status-tentatif" };
+    case "berhalangan":
+    case "tidak hadir":
+      return {
+        label: "Berhalangan",
+        icon: "✕",
+        warnaClass: "status-berhalangan",
+      };
+    default:
+      return { label: "-", icon: "", warnaClass: "" };
+  }
+}
+
+// Function render data ke HTML
+function renderPesanDoa(dataDoa) {
+  const container = document.getElementById("container-doa");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  dataDoa.forEach((item) => {
+    const indikator = getIndikatorKehadiran(item.status);
+
+    const card = document.createElement("div");
+    card.className = "card-doa";
+
+    card.innerHTML = `
+      <div class="header-doa">
+        <strong class="nama-pengirim">${item.nama || "Anonim"}</strong>
+        <span class="badge-kehadiran ${indikator.warnaClass}">
+          <span>${indikator.icon}</span>
+          <span>${indikator.label}</span>
+        </span>
+      </div>
+      <p class="isi-pesan">${item.pesan || ""}</p>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// Contoh pemanggilan data
+const dummyData = [as
+  { nama: "Budi Santoso", status: "hadir", pesan: "Selamat ya!" },
+  { nama: "Siti Rahma", status: "tentatif", pesan: "Insya Allah hadir." },
+  { nama: "Ahmad", status: "berhalangan", pesan: "Maaf belum bisa hadir." },
+];
+
+renderPesanDoa(dummyData);

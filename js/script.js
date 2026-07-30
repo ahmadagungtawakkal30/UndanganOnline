@@ -469,184 +469,131 @@ function loadComments() {
 }
 
 function showLoading(show) {
-  const params = new URLSearchParams(window.location.search);
-  const token = params.get("id");
-  const nameParam = params.get("to");
+  // Toggle simple loading state on the open button and optional overlay.
+  const overlay = document.getElementById("loading-overlay");
+  if (overlay) overlay.style.display = show ? "flex" : "none";
 
-  // Jika ada token, verifikasi lewat token. Jika tidak ada token tetapi ada ?to=, lakukan verifikasi nama (lebih lemah).
-  if (!token && !nameParam) {
-    notify(
-      "Link Tidak Valid",
-      "Undangan ini tidak memiliki kode verifikasi akses.",
-      "error",
-    );
+  const openBtn = document.querySelector(".btn-open");
+  if (openBtn) {
+    openBtn.disabled = !!show;
+    openBtn.innerText = show ? "Memeriksa..." : "Buka Undangan";
+  }
+}
+
+// smooth scroll
+window.scrollToSection = function (id) {
+  const target = document.getElementById(id);
+  if (target) target.scrollIntoView({ behavior: "smooth" });
+};
+
+// auto highlight nav
+const navButtons = document.querySelectorAll(".nav-widget button");
+const sectionMap = {
+  hero: 0,
+  "pengantar-ayat": 1,
+  gallery: 2,
+  location: 3,
+  family: 4,
+  "wedding-gift": 5,
+  "rsvp-section": 6,
+};
+const sections = Object.keys(sectionMap)
+  .map((id) => document.getElementById(id))
+  .filter(Boolean);
+
+window.addEventListener("scroll", () => {
+  let current = null;
+  sections.forEach((sec) => {
+    const rect = sec.getBoundingClientRect();
+    if (
+      rect.top <= window.innerHeight / 2 &&
+      rect.bottom >= window.innerHeight / 2
+    ) {
+      current = sec.id;
+    }
+  });
+
+  navButtons.forEach((btn) => btn.classList.remove("active"));
+  if (current && sectionMap[current] !== undefined) {
+    navButtons[sectionMap[current]].classList.add("active");
+  }
+});
+
+// countdown
+const targetDate = new Date("2027-01-01T08:00:00");
+const daysEl = document.getElementById("days");
+const hoursEl = document.getElementById("hours");
+const minutesEl = document.getElementById("minutes");
+const secondsEl = document.getElementById("seconds");
+const eventDateEl = document.getElementById("event-date");
+const eventDayEl = document.getElementById("event-day");
+
+const dayNames = [
+  "Minggu",
+  "Senin",
+  "Selasa",
+  "Rabu",
+  "Kamis",
+  "Jumat",
+  "Sabtu",
+];
+const monthNames = [
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
+];
+
+if (eventDayEl && eventDateEl) {
+  eventDayEl.textContent = dayNames[targetDate.getDay()];
+  eventDateEl.textContent = `${targetDate.getDate()} ${
+    monthNames[targetDate.getMonth()]
+  } ${targetDate.getFullYear()}`;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = targetDate - now;
+
+  if (diff <= 0) {
+    if (daysEl) daysEl.textContent = "00";
+    if (hoursEl) hoursEl.textContent = "00";
+    if (minutesEl) minutesEl.textContent = "00";
+    if (secondsEl) secondsEl.textContent = "00";
     return;
   }
 
-  showLoading(true);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
 
-  try {
-    const query = token
-      ? `?action=checkGuest&id=${encodeURIComponent(token)}`
-      : `?action=checkGuest&name=${encodeURIComponent(nameParam)}`;
+  if (daysEl) daysEl.textContent = days;
+  if (hoursEl) hoursEl.textContent = String(hours).padStart(2, "0");
+  if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, "0");
+  if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, "0");
+}
 
-    const res = await fetch(scriptURL + query);
-    const data = await res.json();
+updateCountdown();
+setInterval(updateCountdown, 1000);
 
-    showLoading(false);
-
-    if (!data.valid) {
-      notify(
-        "Undangan Tidak Terdaftar",
-        "Maaf, data undangan Anda tidak valid.",
-        "error",
-      );
-      return;
-    }
-
-    const namaAsliTamu = data.name;
-
-    if (guestDisplayEl) guestDisplayEl.innerText = namaAsliTamu;
-    if (formNamaEl) formNamaEl.value = namaAsliTamu;
-
-    // ===== BUKA LAYAR UNDANGAN =====
-    document.getElementById("cover")?.classList.add("hide");
-    document.getElementById("main-content")?.classList.add("show");
-    document.body.style.overflow = "auto";
-
-    if (myAudio) {
-      myAudio.play().catch(() => {});
-      musicBtn.style.display = "flex";
-      playBtn.style.animation = "spin 4s linear infinite";
-    }
-
-    AOS.init({ duration: 800, once: true, disable: window.innerWidth < 768 });
-    loadComments?.();
-    if (typeof loadAttendance === "function") loadAttendance();
-  } catch (err) {
-    showLoading(false);
-    notify(
-      "Terjadi Kesalahan",
-      "Gagal memverifikasi akun undangan. Silakan coba lagi.",
-    );
-    console.error(err);
-  }
-
-  // smooth scroll
-  window.scrollToSection = function (id) {
-    const target = document.getElementById(id);
-    if (target) target.scrollIntoView({ behavior: "smooth" });
-  };
-
-  // auto highlight nav
-  const navButtons = document.querySelectorAll(".nav-widget button");
-  const sectionMap = {
-    hero: 0,
-    "pengantar-ayat": 1,
-    gallery: 2,
-    location: 3,
-    family: 4,
-    "wedding-gift": 5,
-    "rsvp-section": 6,
-  };
-  const sections = Object.keys(sectionMap)
-    .map((id) => document.getElementById(id))
-    .filter(Boolean);
-
-  window.addEventListener("scroll", () => {
-    let current = null;
-    sections.forEach((sec) => {
-      const rect = sec.getBoundingClientRect();
-      if (
-        rect.top <= window.innerHeight / 2 &&
-        rect.bottom >= window.innerHeight / 2
-      ) {
-        current = sec.id;
-      }
-    });
-
-    navButtons.forEach((btn) => btn.classList.remove("active"));
-    if (current && sectionMap[current] !== undefined) {
-      navButtons[sectionMap[current]].classList.add("active");
-    }
-  });
-
-  // countdown
-  const targetDate = new Date("2027-01-01T08:00:00");
-  const daysEl = document.getElementById("days");
-  const hoursEl = document.getElementById("hours");
-  const minutesEl = document.getElementById("minutes");
-  const secondsEl = document.getElementById("seconds");
-  const eventDateEl = document.getElementById("event-date");
-  const eventDayEl = document.getElementById("event-day");
-
-  const dayNames = [
-    "Minggu",
-    "Senin",
-    "Selasa",
-    "Rabu",
-    "Kamis",
-    "Jumat",
-    "Sabtu",
-  ];
-  const monthNames = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
-
-  if (eventDayEl && eventDateEl) {
-    eventDayEl.textContent = dayNames[targetDate.getDay()];
-    eventDateEl.textContent = `${targetDate.getDate()} ${
-      monthNames[targetDate.getMonth()]
-    } ${targetDate.getFullYear()}`;
-  }
-
-  function updateCountdown() {
-    const now = new Date();
-    const diff = targetDate - now;
-
-    if (diff <= 0) {
-      if (daysEl) daysEl.textContent = "00";
-      if (hoursEl) hoursEl.textContent = "00";
-      if (minutesEl) minutesEl.textContent = "00";
-      if (secondsEl) secondsEl.textContent = "00";
-      return;
-    }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
-
-    if (daysEl) daysEl.textContent = days;
-    if (hoursEl) hoursEl.textContent = String(hours).padStart(2, "0");
-    if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, "0");
-    if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, "0");
-  }
-
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
-  // scroll progress
-  window.addEventListener("scroll", () => {
-    const scrollTop = window.scrollY;
-    const docHeight =
-      document.documentElement.scrollHeight - window.innerHeight;
-    const progress = (scrollTop / docHeight) * 100;
-    const progEl = document.getElementById("scroll-progress");
-    if (progEl) progEl.style.width = progress + "%";
-  });
+// scroll progress
+window.addEventListener("scroll", () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  const progEl = document.getElementById("scroll-progress");
+  if (progEl) progEl.style.width = progress + "%";
 });
+// stray closing removed
 
 // ===== NAV WIDGET TOGGLE =====
 const navWidget = document.getElementById("navWidget");

@@ -582,13 +582,13 @@ input[readonly] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 30px;
-  height: 26px;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 0.78rem;
+  min-width: auto;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  font-size: 0.95rem;
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.05);
+  background: transparent;
   color: #222;
   margin-top: 0;
   line-height: 1;
@@ -596,16 +596,13 @@ input[readonly] {
   flex-shrink: 0;
 }
 .ig-attendance--yes {
-  background: rgba(81, 201, 121, 0.18);
-  color: #206030;
+  color: #1f9d49;
 }
 .ig-attendance--tentative {
-  background: rgba(255, 199, 76, 0.2);
-  color: #8a5b00;
+  color: #b77d00;
 }
 .ig-attendance--no {
-  background: rgba(255, 135, 135, 0.18);
-  color: #b52c2c;
+  color: #d93b3b;
 }
 .ig-text {
   display: block;

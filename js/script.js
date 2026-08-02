@@ -526,15 +526,23 @@ function getAttendanceBadge(attendance) {
   const text = (attendance || "").toString().trim();
   const normalized = text.toLowerCase();
   if (normalized === "hadir") {
-    return { icon: "✅", className: "ig-attendance--yes" };
+    return { icon: "✅", className: "ig-attendance--yes", label: "Hadir" };
   }
   if (normalized === "tentatif") {
-    return { icon: "⏳", className: "ig-attendance--tentative" };
+    return {
+      icon: "⏳",
+      className: "ig-attendance--tentative",
+      label: "Tentatif",
+    };
   }
   if (normalized === "tidak hadir" || normalized === "berhalangan") {
-    return { icon: "❌", className: "ig-attendance--no" };
+    return {
+      icon: "❌",
+      className: "ig-attendance--no",
+      label: "Berhalangan",
+    };
   }
-  return { icon: "", className: "" };
+  return { icon: "", className: "", label: "" };
 }
 
 function saveAttendanceStatus(status) {
@@ -640,7 +648,7 @@ function loadComments(timeoutMs = 8000) {
           .trim();
         const badge = getAttendanceBadge(attendance);
         const attendanceLabel = badge.icon
-          ? `<span class="ig-attendance ${badge.className}" title="${escapeHTML(attendance)}">${badge.icon}</span>`
+          ? `<span class="ig-attendance ${badge.className}" title="${escapeHTML(badge.label || attendance)}">${badge.icon}</span>`
           : "";
 
         let html = `
@@ -676,7 +684,7 @@ function loadComments(timeoutMs = 8000) {
               .trim();
             const replyBadge = getAttendanceBadge(replyAttendance);
             const replyAttendanceLabel = replyBadge.icon
-              ? `<span class="ig-attendance ${replyBadge.className}" title="${escapeHTML(replyAttendance)}">${replyBadge.icon}</span>`
+              ? `<span class="ig-attendance ${replyBadge.className}" title="${escapeHTML(replyBadge.label || replyAttendance)}">${replyBadge.icon}</span>`
               : "";
 
             html += `

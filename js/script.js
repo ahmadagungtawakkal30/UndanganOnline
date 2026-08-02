@@ -702,7 +702,7 @@ window.addEventListener("scroll", () => {
 });
 
 // ===== COUNTDOWN =====
-const targetDate = new Date("2025-12-25T08:00:00");
+const targetDate = new Date("2027-01-01T08:00:00");
 const daysEl = document.getElementById("days");
 const hoursEl = document.getElementById("hours");
 const minutesEl = document.getElementById("minutes");

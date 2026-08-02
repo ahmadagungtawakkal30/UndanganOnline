@@ -171,20 +171,42 @@ function saveAttendance(e) {
 /* =========================
    AMBIL DATA PESAN
 ========================= */
+function getAttendanceMap() {
+  const sheet = SpreadsheetApp.getActive().getSheetByName(SHEET_KEHADIRAN);
+  if (!sheet || sheet.getLastRow() < 2) return {};
+
+  const data = sheet.getDataRange().getValues();
+  const attendanceMap = {};
+
+  for (let i = 1; i < data.length; i++) {
+    const nama = (data[i][0] || "").toString().trim();
+    const kehadiran = (data[i][1] || "").toString().trim();
+    if (nama) {
+      attendanceMap[nama.toLowerCase()] = kehadiran;
+    }
+  }
+
+  return attendanceMap;
+}
+
 function getMessages() {
   const sheet = SpreadsheetApp.getActive().getSheetByName(SHEET_PESAN);
   if (!sheet || sheet.getLastRow() < 2) return json([]);
 
   const data = sheet.getDataRange().getValues();
+  const attendanceMap = getAttendanceMap();
   const result = [];
 
   for (let i = 1; i < data.length; i++) {
+    const nama = (data[i][1] || "").toString().trim();
+
     result.push({
       id: data[i][0],
-      nama: data[i][1],
+      nama: nama,
       pesan: data[i][2],
       waktu: data[i][3],
       replyID: data[i][4],
+      kehadiran: attendanceMap[nama.toLowerCase()] || "",
     });
   }
 

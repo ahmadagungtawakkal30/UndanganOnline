@@ -512,6 +512,16 @@ function confirmAttendance(status) {
   toggleAttendanceSheet(false);
 }
 
+function normalizeName(value) {
+  return (value || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function getAttendanceBadge(attendance) {
   const text = (attendance || "").toString().trim();
   const normalized = text.toLowerCase();
@@ -575,19 +585,39 @@ function loadComments(timeoutMs = 8000) {
   container.innerHTML =
     '<p style="text-align:center; color:#999; font-size:.8rem;">Memuat pesan...</p>';
 
-  return fetchWithTimeout(
-    `${scriptURL}?action=getMessages&_=${Date.now()}`,
-    { cache: "no-store" },
-    timeoutMs,
-  )
-    .then((res) => {
+  return Promise.all([
+    fetchWithTimeout(
+      `${scriptURL}?action=getMessages&_=${Date.now()}`,
+      { cache: "no-store" },
+      timeoutMs,
+    ).then((res) => {
       if (!res.ok) throw new Error(`getMessages returned ${res.status}`);
       return res.json();
-    })
-    .then((data) => {
+    }),
+    fetchWithTimeout(
+      `${scriptURL}?action=getAttendance&_=${Date.now()}`,
+      { cache: "no-store" },
+      timeoutMs,
+    ).then((res) => {
+      if (!res.ok) throw new Error(`getAttendance returned ${res.status}`);
+      return res.json();
+    }),
+  ])
+    .then(([messageData, attendanceData]) => {
       container.innerHTML = "";
 
-      if (!Array.isArray(data) || data.length === 0) {
+      const attendanceMap = {};
+      if (Array.isArray(attendanceData)) {
+        attendanceData.forEach((item) => {
+          const normalized = normalizeName(item.nama);
+          if (normalized) {
+            attendanceMap[normalized] = item.kehadiran || "";
+          }
+        });
+      }
+
+      const data = Array.isArray(messageData) ? messageData : [];
+      if (data.length === 0) {
         container.innerHTML =
           '<p style="text-align:center; color:#999; font-size:.8rem;">Belum ada ucapan.</p>';
         return;
@@ -604,7 +634,10 @@ function loadComments(timeoutMs = 8000) {
         const safeWaktu = escapeHTML(formatDate(m.waktu));
         const safeId = escapeHTML(m.id);
 
-        const attendance = (m.kehadiran || "").toString().trim();
+        const normalizedName = normalizeName(m.nama);
+        const attendance = (m.kehadiran || attendanceMap[normalizedName] || "")
+          .toString()
+          .trim();
         const badge = getAttendanceBadge(attendance);
         const attendanceLabel = badge.icon
           ? `<span class="ig-attendance ${badge.className}" title="${escapeHTML(attendance)}">${badge.icon}</span>`
@@ -633,7 +666,14 @@ function loadComments(timeoutMs = 8000) {
         if (sub.length) {
           html += `<div class="reply-container">`;
           sub.forEach((s) => {
-            const replyAttendance = (s.kehadiran || "").toString().trim();
+            const replyNormalizedName = normalizeName(s.nama);
+            const replyAttendance = (
+              s.kehadiran ||
+              attendanceMap[replyNormalizedName] ||
+              ""
+            )
+              .toString()
+              .trim();
             const replyBadge = getAttendanceBadge(replyAttendance);
             const replyAttendanceLabel = replyBadge.icon
               ? `<span class="ig-attendance ${replyBadge.className}" title="${escapeHTML(replyAttendance)}">${replyBadge.icon}</span>`

@@ -156,9 +156,31 @@ function setSubmitButtonState(isSubmitting, isSuccess = false) {
   }
 }
 
+function hasAttendanceSelection() {
+  const statusEl = document.getElementById("attendance-status");
+  if (!statusEl) return false;
+
+  const text = (statusEl.textContent || "").toString().trim().toLowerCase();
+  return text !== "belum dipilih" && text !== "";
+}
+
 function attachRsvpFormHandler() {
   const rsvpForm = document.getElementById("rsvp-form");
   if (!rsvpForm) return;
+
+  const pesanInput = document.getElementById("form-pesan");
+  if (pesanInput) {
+    pesanInput.addEventListener("focus", () => {
+      if (!hasAttendanceSelection()) {
+        notify(
+          "Konfirmasi Kehadiran Diperlukan",
+          "Sebelum menulis doa, silakan pilih status kehadiran Anda terlebih dahulu.",
+          "error",
+        );
+        toggleAttendanceSheet(true);
+      }
+    });
+  }
 
   rsvpForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -170,6 +192,16 @@ function attachRsvpFormHandler() {
 
     if (!nama || !pesan) {
       notify("Isi Data", "Nama dan pesan doa harus diisi.", "error");
+      return;
+    }
+
+    if (!hasAttendanceSelection()) {
+      notify(
+        "Konfirmasi Kehadiran Diperlukan",
+        "Silakan pilih status kehadiran Anda terlebih dahulu sebelum mengirim pesan doa.",
+        "error",
+      );
+      toggleAttendanceSheet(true);
       return;
     }
 
